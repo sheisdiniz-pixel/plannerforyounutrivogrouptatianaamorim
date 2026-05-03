@@ -94,7 +94,7 @@ function Index() {
 
       {/* Hero header */}
       <header className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-[var(--gradient-header)] opacity-95" />
+        <div className="absolute inset-0 bg-[var(--gradient-hero)] opacity-90" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,white,transparent_60%)] opacity-30" />
         <div className="relative mx-auto max-w-6xl px-6 py-10 md:py-14">
           <div className="flex items-center gap-3 text-white">
