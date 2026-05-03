@@ -29,14 +29,18 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "Planner checklist completa" },
+      { name: "description", content: "mercado, churrasco, material escolar, lista de natal, afazeres na parte da manhã ou trabalho, qualquer que seja a sua Rotina o nosso planner atenderá." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Planner checklist completa" },
+      { property: "og:description", content: "mercado, churrasco, material escolar, lista de natal, afazeres na parte da manhã ou trabalho, qualquer que seja a sua Rotina o nosso planner atenderá." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Planner checklist completa" },
+      { name: "twitter:description", content: "mercado, churrasco, material escolar, lista de natal, afazeres na parte da manhã ou trabalho, qualquer que seja a sua Rotina o nosso planner atenderá." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/x6rk2HtaJnX0UtjBHe3Js5Qc4hC3/social-images/social-1777785220907-WhatsApp_Image_2026-05-02_at_2.21.03_PM.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/x6rk2HtaJnX0UtjBHe3Js5Qc4hC3/social-images/social-1777785220907-WhatsApp_Image_2026-05-02_at_2.21.03_PM.webp" },
     ],
     links: [
       {
