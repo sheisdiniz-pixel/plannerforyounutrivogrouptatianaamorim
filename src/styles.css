@@ -76,6 +76,7 @@
   --accent-green: oklch(0.78 0.16 155);
   --accent-blue: oklch(0.72 0.14 230);
   --gradient-hero: linear-gradient(135deg, oklch(0.65 0.17 160), oklch(0.62 0.18 235));
+  --gradient-header: linear-gradient(135deg, oklch(0.32 0.02 250), oklch(0.45 0.025 240));
   --gradient-soft: linear-gradient(135deg, oklch(0.95 0.05 160), oklch(0.95 0.05 230));
   --shadow-elegant: 0 10px 30px -10px oklch(0.62 0.18 235 / 0.25);
   --shadow-soft: 0 4px 12px -4px oklch(0.22 0.03 240 / 0.08);
