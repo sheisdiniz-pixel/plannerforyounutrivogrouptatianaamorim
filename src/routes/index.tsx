@@ -1,24 +1,30 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { NICHES, type ListNiche } from "@/lib/lists-data";
-import { useLists, type ListItem, type SavedList } from "@/hooks/use-lists";
+import { ROUTINES, RANKS, REWARDS, rankFromXp } from "@/lib/routines-data";
+import { useLists, type SavedList } from "@/hooks/use-lists";
+import { useChecklist } from "@/hooks/use-checklist";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Progress } from "@/components/ui/progress";
 import { toast, Toaster } from "sonner";
-import { Plus, Trash2, FolderPlus, ShoppingBag, Sparkles, Save, Lightbulb, Folder, X } from "lucide-react";
+import {
+  Plus, Trash2, FolderPlus, ShoppingBag, Sparkles, Save, Lightbulb, Folder, X,
+  ListChecks, Flame, Trophy, Gift, Zap, CheckCircle2,
+} from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Planner For You — Listas inteligentes para sua vida" },
-      { name: "description", content: "Organize compras por nicho: maquiagem, fitness, vegana, bebê, tech e mais. Listas elegantes, salvas em pastas." },
+      { title: "Planner For You — Listas e rotinas inteligentes" },
+      { name: "description", content: "Listas de compras por nicho e checklists de rotina com rank, XP e recompensas. Planeje sua vida em segundos." },
     ],
   }),
   component: Index,
@@ -30,6 +36,7 @@ function uid() {
 
 function Index() {
   const { lists, folders, saveList, deleteList, addFolder } = useLists();
+  const { state: checklistState, toggleTask } = useChecklist();
   const [activeNiche, setActiveNiche] = useState<ListNiche>(NICHES[0]);
   const [editor, setEditor] = useState<SavedList | null>(null);
   const [newItem, setNewItem] = useState("");
@@ -37,6 +44,8 @@ function Index() {
   const [feedback, setFeedback] = useState("");
   const [folderInput, setFolderInput] = useState("");
   const [tab, setTab] = useState("explorar");
+  const [exploreMode, setExploreMode] = useState<"compras" | "checklist">("compras");
+  const [activeRoutineId, setActiveRoutineId] = useState<string>(ROUTINES[0].id);
 
   const startNewList = (niche: ListNiche) => {
     const list: SavedList = {
@@ -88,30 +97,46 @@ function Index() {
     return map;
   }, [lists, folders]);
 
+  const activeRoutine = ROUTINES.find((r) => r.id === activeRoutineId) ?? ROUTINES[0];
+  const rank = rankFromXp(checklistState.xp);
+  const tasksDoneToday = activeRoutine.tasks.filter((t) => checklistState.completedToday[t.id]).length;
+  const dayProgress = (tasksDoneToday / activeRoutine.tasks.length) * 100;
+
+  const handleToggleTask = (taskId: string, xp: number) => {
+    const wasDone = !!checklistState.completedToday[taskId];
+    toggleTask(taskId, xp);
+    if (!wasDone) {
+      toast.success(`+${xp} XP`, { description: "Tarefa concluída! 🎉" });
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-background to-sky-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-background to-slate-100">
       <Toaster position="top-center" richColors />
 
-      {/* Hero header */}
+      {/* Hero header — graphite/charcoal for emphasis */}
       <header className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-[var(--gradient-hero)] opacity-90" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,white,transparent_60%)] opacity-30" />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,oklch(0.65_0.17_160/0.35),transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,oklch(0.62_0.18_235/0.25),transparent_60%)]" />
         <div className="relative mx-auto max-w-6xl px-6 py-10 md:py-14">
           <div className="flex items-center gap-3 text-white">
-            <div className="rounded-2xl bg-white/20 p-2.5 backdrop-blur">
+            <div className="rounded-2xl bg-white/10 p-2.5 ring-1 ring-white/20 backdrop-blur">
               <ShoppingBag className="h-6 w-6" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Planner For You</h1>
-              <p className="text-sm text-white/85">Listas inteligentes para tudo que importa</p>
+              <h1 className="bg-gradient-to-r from-white via-emerald-200 to-sky-300 bg-clip-text text-2xl font-extrabold tracking-tight text-transparent md:text-3xl">
+                Planner For You
+              </h1>
+              <p className="text-sm text-slate-300">Listas e rotinas inteligentes</p>
             </div>
             <div className="ml-auto">
               <Button
                 variant="secondary"
-                className="gap-2 bg-white text-foreground hover:bg-white/90"
+                className="gap-2 bg-white/10 text-white ring-1 ring-white/20 backdrop-blur hover:bg-white/20"
                 onClick={() => setFeedbackOpen(true)}
               >
-                <Lightbulb className="h-4 w-4 text-amber-500" />
+                <Lightbulb className="h-4 w-4 text-amber-300" />
                 <span className="hidden sm:inline">Sugestões</span>
               </Button>
             </div>
@@ -133,66 +158,255 @@ function Index() {
 
           {/* EXPLORAR */}
           <TabsContent value="explorar" className="mt-6">
-            <section>
-              <div className="mb-4 flex items-end justify-between">
-                <div>
-                  <h2 className="text-xl font-bold">Compras</h2>
-                  <p className="text-sm text-muted-foreground">Escolha um estilo e crie sua lista em segundos</p>
+            {/* Section switcher: Compras | Checklist */}
+            <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setExploreMode("compras")}
+                  className={`rounded-full px-5 py-2 text-base font-bold transition-all ${
+                    exploreMode === "compras"
+                      ? "bg-[var(--gradient-hero)] text-white shadow-md"
+                      : "bg-white text-foreground hover:bg-muted"
+                  }`}
+                >
+                  <ShoppingBag className="mr-1.5 inline h-4 w-4" /> Compras
+                </button>
+                <button
+                  onClick={() => setExploreMode("checklist")}
+                  className={`rounded-full px-5 py-2 text-base font-bold transition-all ${
+                    exploreMode === "checklist"
+                      ? "bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-md"
+                      : "bg-white text-foreground hover:bg-muted"
+                  }`}
+                >
+                  <ListChecks className="mr-1.5 inline h-4 w-4" /> Checklist
+                </button>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {exploreMode === "compras"
+                  ? "Escolha um estilo e crie sua lista em segundos"
+                  : "Cumpra rotinas, ganhe XP e suba de rank 🏆"}
+              </p>
+            </div>
+
+            {exploreMode === "compras" ? (
+              <section>
+                {/* Niche pills */}
+                <div className="mb-6 flex gap-2 overflow-x-auto pb-2">
+                  {NICHES.map((n) => {
+                    const active = activeNiche.id === n.id;
+                    return (
+                      <button
+                        key={n.id}
+                        onClick={() => setActiveNiche(n)}
+                        className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition-all ${
+                          active
+                            ? "border-transparent bg-[var(--gradient-hero)] text-white shadow-md"
+                            : "border-border bg-white text-foreground hover:border-primary/50"
+                        }`}
+                      >
+                        <span className="mr-1.5">{n.emoji}</span>
+                        {n.name}
+                      </button>
+                    );
+                  })}
                 </div>
-              </div>
 
-              {/* Niche pills */}
-              <div className="mb-6 flex gap-2 overflow-x-auto pb-2">
-                {NICHES.map((n) => {
-                  const active = activeNiche.id === n.id;
-                  return (
-                    <button
-                      key={n.id}
-                      onClick={() => setActiveNiche(n)}
-                      className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition-all ${
-                        active
-                          ? "border-transparent bg-[var(--gradient-hero)] text-white shadow-md"
-                          : "border-border bg-white text-foreground hover:border-primary/50"
-                      }`}
-                    >
-                      <span className="mr-1.5">{n.emoji}</span>
-                      {n.name}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Niche grid */}
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {NICHES.map((n) => {
-                  const Icon = n.icon;
-                  return (
-                    <Card
-                      key={n.id}
-                      className="group relative cursor-pointer overflow-hidden border-border/60 p-0 transition-all hover:-translate-y-1 hover:shadow-[var(--shadow-elegant)]"
-                      onClick={() => startNewList(n)}
-                    >
-                      <div className={`bg-gradient-to-br ${n.color} p-5 text-white`}>
-                        <div className="flex items-start justify-between">
-                          <div className="rounded-xl bg-white/20 p-2.5 backdrop-blur">
-                            <Icon className="h-5 w-5" />
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {NICHES.map((n) => {
+                    const Icon = n.icon;
+                    return (
+                      <Card
+                        key={n.id}
+                        className="group relative cursor-pointer overflow-hidden border-border/60 p-0 transition-all hover:-translate-y-1 hover:shadow-[var(--shadow-elegant)]"
+                        onClick={() => startNewList(n)}
+                      >
+                        <div className={`bg-gradient-to-br ${n.color} p-5 text-white`}>
+                          <div className="flex items-start justify-between">
+                            <div className="rounded-xl bg-white/20 p-2.5 backdrop-blur">
+                              <Icon className="h-5 w-5" />
+                            </div>
+                            <span className="text-3xl">{n.emoji}</span>
                           </div>
-                          <span className="text-3xl">{n.emoji}</span>
+                          <h3 className="mt-4 text-lg font-bold">{n.name}</h3>
+                          <p className="text-sm text-white/85">{n.description}</p>
                         </div>
-                        <h3 className="mt-4 text-lg font-bold">{n.name}</h3>
-                        <p className="text-sm text-white/85">{n.description}</p>
+                        <div className="flex items-center justify-between p-4">
+                          <span className="text-xs text-muted-foreground">{n.defaultItems.length} itens • {n.actions.length} ações</span>
+                          <Button size="sm" className="gap-1 rounded-full">
+                            <Plus className="h-4 w-4" /> Criar
+                          </Button>
+                        </div>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </section>
+            ) : (
+              <section>
+                {/* Gamification dashboard */}
+                <div className="mb-6 grid grid-cols-1 gap-3 md:grid-cols-3">
+                  <Card className="overflow-hidden border-0 bg-gradient-to-br from-slate-900 to-slate-700 p-5 text-white">
+                    <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-slate-300">
+                      <Trophy className="h-4 w-4" /> Rank atual
+                    </div>
+                    <div className="mt-2 flex items-baseline gap-2">
+                      <span className="text-3xl">{rank.current.emoji}</span>
+                      <span className="text-2xl font-extrabold">{rank.current.name}</span>
+                    </div>
+                    {rank.next ? (
+                      <>
+                        <Progress value={rank.progress} className="mt-3 bg-white/15" />
+                        <p className="mt-1.5 text-xs text-slate-300">
+                          {rank.next.min - checklistState.xp} XP para {rank.next.emoji} {rank.next.name}
+                        </p>
+                      </>
+                    ) : (
+                      <p className="mt-3 text-xs text-amber-300">Você atingiu o rank máximo! 👑</p>
+                    )}
+                  </Card>
+
+                  <Card className="border-0 bg-gradient-to-br from-amber-500 to-orange-600 p-5 text-white">
+                    <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-white/85">
+                      <Zap className="h-4 w-4" /> XP total
+                    </div>
+                    <div className="mt-2 text-4xl font-extrabold">{checklistState.xp}</div>
+                    <p className="mt-1 text-xs text-white/80">{checklistState.totalCompletions} tarefas concluídas</p>
+                  </Card>
+
+                  <Card className="border-0 bg-gradient-to-br from-rose-500 to-fuchsia-600 p-5 text-white">
+                    <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-white/85">
+                      <Flame className="h-4 w-4" /> Streak
+                    </div>
+                    <div className="mt-2 text-4xl font-extrabold">{checklistState.streak} 🔥</div>
+                    <p className="mt-1 text-xs text-white/80">dias consecutivos</p>
+                  </Card>
+                </div>
+
+                {/* Routine selector */}
+                <div className="mb-5 flex gap-2 overflow-x-auto pb-2">
+                  {ROUTINES.map((r) => {
+                    const active = activeRoutineId === r.id;
+                    return (
+                      <button
+                        key={r.id}
+                        onClick={() => setActiveRoutineId(r.id)}
+                        className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition-all ${
+                          active
+                            ? "border-transparent bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-md"
+                            : "border-border bg-white text-foreground hover:border-primary/50"
+                        }`}
+                      >
+                        <span className="mr-1.5">{r.emoji}</span>
+                        {r.name}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Active routine card */}
+                <Card className="overflow-hidden p-0">
+                  <div className={`bg-gradient-to-br ${activeRoutine.color} p-5 text-white`}>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-3xl">{activeRoutine.emoji}</span>
+                          <h3 className="text-xl font-extrabold">{activeRoutine.name}</h3>
+                        </div>
+                        <p className="text-sm text-white/85">{activeRoutine.description}</p>
                       </div>
-                      <div className="flex items-center justify-between p-4">
-                        <span className="text-xs text-muted-foreground">{n.defaultItems.length} itens • {n.actions.length} ações</span>
-                        <Button size="sm" className="gap-1 rounded-full">
-                          <Plus className="h-4 w-4" /> Criar
-                        </Button>
+                      <div className="text-right">
+                        <div className="text-xs uppercase tracking-wider text-white/85">Hoje</div>
+                        <div className="text-2xl font-bold">{tasksDoneToday}/{activeRoutine.tasks.length}</div>
                       </div>
-                    </Card>
-                  );
-                })}
-              </div>
-            </section>
+                    </div>
+                    <Progress value={dayProgress} className="mt-3 bg-white/20" />
+                  </div>
+
+                  <div className="space-y-2 p-4">
+                    {activeRoutine.tasks.map((task) => {
+                      const done = !!checklistState.completedToday[task.id];
+                      return (
+                        <button
+                          key={task.id}
+                          onClick={() => handleToggleTask(task.id, task.xp)}
+                          className={`flex w-full items-center gap-3 rounded-xl border-2 px-4 py-3 text-left transition-all ${
+                            done
+                              ? "border-emerald-500/50 bg-emerald-50"
+                              : "border-border bg-white hover:border-primary/50 hover:shadow-sm"
+                          }`}
+                        >
+                          <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${done ? "bg-emerald-500 text-white" : "bg-muted"}`}>
+                            {done ? <CheckCircle2 className="h-5 w-5" /> : <span className="text-lg">{task.emoji}</span>}
+                          </div>
+                          <span className={`flex-1 font-medium ${done ? "text-muted-foreground line-through" : ""}`}>
+                            {task.label}
+                          </span>
+                          <Badge className={done ? "bg-emerald-500" : "bg-amber-500"}>
+                            <Zap className="mr-1 h-3 w-3" /> {task.xp} XP
+                          </Badge>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </Card>
+
+                {/* Rewards */}
+                <div className="mt-6">
+                  <h3 className="mb-3 flex items-center gap-2 text-lg font-bold">
+                    <Gift className="h-5 w-5 text-rose-500" /> Recompensas
+                  </h3>
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {REWARDS.map((rw) => {
+                      const unlocked = checklistState.xp >= rw.xp;
+                      return (
+                        <Card
+                          key={rw.label}
+                          className={`p-4 transition-all ${unlocked ? "border-emerald-500/50 bg-gradient-to-br from-emerald-50 to-white" : "opacity-70"}`}
+                        >
+                          <div className="flex items-start justify-between">
+                            <span className="text-3xl">{rw.emoji}</span>
+                            <Badge variant={unlocked ? "default" : "secondary"} className={unlocked ? "bg-emerald-500" : ""}>
+                              {unlocked ? "Desbloqueado" : `${rw.xp} XP`}
+                            </Badge>
+                          </div>
+                          <p className="mt-2 font-semibold">{rw.label}</p>
+                          {!unlocked && (
+                            <p className="mt-1 text-xs text-muted-foreground">
+                              Faltam {rw.xp - checklistState.xp} XP
+                            </p>
+                          )}
+                        </Card>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Ranks legend */}
+                <div className="mt-6">
+                  <h3 className="mb-3 flex items-center gap-2 text-lg font-bold">
+                    <Trophy className="h-5 w-5 text-amber-500" /> Ranks
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {RANKS.map((r) => {
+                      const reached = checklistState.xp >= r.min;
+                      return (
+                        <div
+                          key={r.name}
+                          className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm ${
+                            reached ? "border-emerald-500 bg-white" : "border-border bg-muted/40 opacity-60"
+                          }`}
+                        >
+                          <span>{r.emoji}</span>
+                          <span className="font-semibold">{r.name}</span>
+                          <span className="text-xs text-muted-foreground">{r.min} XP</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </section>
+            )}
           </TabsContent>
 
           {/* MINHAS */}
@@ -303,7 +517,6 @@ function Index() {
                 </Select>
               </div>
 
-              {/* Action buttons */}
               <div className="flex flex-wrap gap-2">
                 {editorNiche.actions.map((a) => (
                   <Button
@@ -318,7 +531,6 @@ function Index() {
                 ))}
               </div>
 
-              {/* Items */}
               <div className="max-h-72 space-y-1.5 overflow-y-auto pr-1">
                 {editor.items.map((item) => (
                   <div key={item.id} className="group flex items-center gap-3 rounded-lg border bg-white px-3 py-2 transition-colors hover:border-primary/50">
