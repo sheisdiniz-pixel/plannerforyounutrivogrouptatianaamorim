@@ -19,6 +19,7 @@ import {
   Plus, Trash2, FolderPlus, ShoppingBag, Sparkles, Save, Lightbulb, Folder, X,
   ListChecks, Flame, Trophy, Gift, Zap, CheckCircle2,
 } from "lucide-react";
+import profileLogo from "@/assets/profile-logo.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
