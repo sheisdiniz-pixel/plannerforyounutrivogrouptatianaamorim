@@ -17,9 +17,10 @@ import { Progress } from "@/components/ui/progress";
 import { toast, Toaster } from "sonner";
 import {
   Plus, Trash2, FolderPlus, ShoppingBag, Sparkles, Save, Lightbulb, Folder, X,
-  ListChecks, Flame, Trophy, Gift, Zap, CheckCircle2,
+  ListChecks, Flame, Trophy, Gift, Zap, CheckCircle2, Bell,
 } from "lucide-react";
 import profileLogo from "@/assets/profile-logo.png";
+import { useReminders } from "@/hooks/use-reminders";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -47,6 +48,9 @@ function Index() {
   const [tab, setTab] = useState("explorar");
   const [exploreMode, setExploreMode] = useState<"compras" | "checklist">("compras");
   const [activeRoutineId, setActiveRoutineId] = useState<string>(ROUTINES[0].id);
+  const { reminders, setReminder } = useReminders((id) =>
+    ROUTINES.flatMap((r) => r.tasks).find((t) => t.id === id)?.label ?? "Tarefa"
+  );
 
   const startNewList = (niche: ListNiche) => {
     const list: SavedList = {
@@ -121,7 +125,7 @@ function Index() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,oklch(0.65_0.17_160/0.35),transparent_60%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,oklch(0.62_0.18_235/0.25),transparent_60%)]" />
         <div className="relative mx-auto max-w-6xl px-6 py-10 md:py-14">
-          <div className="flex items-center gap-3 text-slate-200">
+          <div className="flex items-center gap-3 text-slate-900">
             <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-white ring-1 ring-white/20 shadow-lg">
               <img src={profileLogo} alt="Planner For You" className="h-full w-full rounded-2xl object-contain p-0.5" />
             </div>
@@ -129,12 +133,12 @@ function Index() {
               <h1 className="bg-gradient-to-r from-white via-emerald-200 to-sky-300 bg-clip-text text-2xl font-extrabold tracking-tight text-transparent md:text-3xl">
                 Planner For You
               </h1>
-              <p className="text-sm text-slate-300">Listas e rotinas inteligentes</p>
+              <p className="text-sm text-slate-700">Listas e rotinas inteligentes</p>
             </div>
             <div className="ml-auto">
               <Button
                 variant="secondary"
-                className="gap-2 bg-white/10 text-slate-200 ring-1 ring-white/20 backdrop-blur hover:bg-white/20"
+                className="gap-2 bg-white/10 text-slate-900 ring-1 ring-white/20 backdrop-blur hover:bg-white/20"
                 onClick={() => setFeedbackOpen(true)}
               >
                 <Lightbulb className="h-4 w-4 text-amber-300" />
@@ -148,10 +152,10 @@ function Index() {
       <main className="mx-auto max-w-6xl px-4 py-8 md:px-6">
         <Tabs value={tab} onValueChange={setTab} className="w-full">
           <TabsList className="grid w-full max-w-md grid-cols-2 rounded-full bg-white shadow-sm">
-            <TabsTrigger value="explorar" className="rounded-full data-[state=active]:bg-[var(--gradient-hero)] data-[state=active]:text-slate-200">
+            <TabsTrigger value="explorar" className="rounded-full data-[state=active]:bg-[var(--gradient-hero)] data-[state=active]:text-slate-900">
               <Sparkles className="mr-2 h-4 w-4" /> Explorar
             </TabsTrigger>
-            <TabsTrigger value="minhas" className="rounded-full data-[state=active]:bg-[var(--gradient-hero)] data-[state=active]:text-slate-200">
+            <TabsTrigger value="minhas" className="rounded-full data-[state=active]:bg-[var(--gradient-hero)] data-[state=active]:text-slate-900">
               <Folder className="mr-2 h-4 w-4" /> Minhas listas
               {lists.length > 0 && <Badge className="ml-2 bg-white/30">{lists.length}</Badge>}
             </TabsTrigger>
@@ -166,7 +170,7 @@ function Index() {
                   onClick={() => setExploreMode("compras")}
                   className={`rounded-full px-5 py-2 text-base font-bold transition-all ${
                     exploreMode === "compras"
-                      ? "bg-[var(--gradient-hero)] text-slate-200 shadow-md"
+                      ? "bg-[var(--gradient-hero)] text-slate-900 shadow-md"
                       : "bg-white text-foreground hover:bg-muted"
                   }`}
                 >
@@ -176,7 +180,7 @@ function Index() {
                   onClick={() => setExploreMode("checklist")}
                   className={`rounded-full px-5 py-2 text-base font-bold transition-all ${
                     exploreMode === "checklist"
-                      ? "bg-gradient-to-r from-amber-500 to-rose-500 text-slate-200 shadow-md"
+                      ? "bg-gradient-to-r from-amber-500 to-rose-500 text-slate-900 shadow-md"
                       : "bg-white text-foreground hover:bg-muted"
                   }`}
                 >
@@ -202,7 +206,7 @@ function Index() {
                         onClick={() => setActiveNiche(n)}
                         className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition-all ${
                           active
-                            ? "border-transparent bg-[var(--gradient-hero)] text-slate-200 shadow-md"
+                            ? "border-transparent bg-[var(--gradient-hero)] text-slate-900 shadow-md"
                             : "border-border bg-white text-foreground hover:border-primary/50"
                         }`}
                       >
@@ -222,7 +226,7 @@ function Index() {
                         className="group relative cursor-pointer overflow-hidden border-border/60 p-0 transition-all hover:-translate-y-1 hover:shadow-[var(--shadow-elegant)]"
                         onClick={() => startNewList(n)}
                       >
-                        <div className={`bg-gradient-to-br ${n.color} p-5 text-slate-200`}>
+                        <div className={`bg-gradient-to-br ${n.color} p-5 text-slate-900`}>
                           <div className="flex items-start justify-between">
                             <div className="rounded-xl bg-white/20 p-2.5 backdrop-blur">
                               <Icon className="h-5 w-5" />
@@ -230,7 +234,7 @@ function Index() {
                             <span className="text-3xl">{n.emoji}</span>
                           </div>
                           <h3 className="mt-4 text-lg font-bold">{n.name}</h3>
-                          <p className="text-sm text-slate-300">{n.description}</p>
+                          <p className="text-sm text-slate-700">{n.description}</p>
                         </div>
                         <div className="flex items-center justify-between p-4">
                           <span className="text-xs text-muted-foreground">{n.defaultItems.length} itens • {n.actions.length} ações</span>
@@ -247,8 +251,8 @@ function Index() {
               <section>
                 {/* Gamification dashboard */}
                 <div className="mb-6 grid grid-cols-1 gap-3 md:grid-cols-3">
-                  <Card className="overflow-hidden border-0 bg-gradient-to-br from-slate-900 to-slate-700 p-5 text-slate-200">
-                    <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-slate-300">
+                  <Card className="overflow-hidden border-0 bg-gradient-to-br from-slate-900 to-slate-700 p-5 text-slate-900">
+                    <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-slate-700">
                       <Trophy className="h-4 w-4" /> Rank atual
                     </div>
                     <div className="mt-2 flex items-baseline gap-2">
@@ -258,7 +262,7 @@ function Index() {
                     {rank.next ? (
                       <>
                         <Progress value={rank.progress} className="mt-3 bg-white/15" />
-                        <p className="mt-1.5 text-xs text-slate-300">
+                        <p className="mt-1.5 text-xs text-slate-700">
                           {rank.next.min - checklistState.xp} XP para {rank.next.emoji} {rank.next.name}
                         </p>
                       </>
@@ -267,20 +271,20 @@ function Index() {
                     )}
                   </Card>
 
-                  <Card className="border-0 bg-gradient-to-br from-amber-500 to-orange-600 p-5 text-slate-200">
-                    <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-slate-300">
+                  <Card className="border-0 bg-gradient-to-br from-amber-500 to-orange-600 p-5 text-slate-900">
+                    <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-slate-700">
                       <Zap className="h-4 w-4" /> XP total
                     </div>
                     <div className="mt-2 text-4xl font-extrabold">{checklistState.xp}</div>
-                    <p className="mt-1 text-xs text-slate-300">{checklistState.totalCompletions} tarefas concluídas</p>
+                    <p className="mt-1 text-xs text-slate-700">{checklistState.totalCompletions} tarefas concluídas</p>
                   </Card>
 
-                  <Card className="border-0 bg-gradient-to-br from-rose-500 to-fuchsia-600 p-5 text-slate-200">
-                    <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-slate-300">
+                  <Card className="border-0 bg-gradient-to-br from-rose-500 to-fuchsia-600 p-5 text-slate-900">
+                    <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-slate-700">
                       <Flame className="h-4 w-4" /> Streak
                     </div>
                     <div className="mt-2 text-4xl font-extrabold">{checklistState.streak} 🔥</div>
-                    <p className="mt-1 text-xs text-slate-300">dias consecutivos</p>
+                    <p className="mt-1 text-xs text-slate-700">dias consecutivos</p>
                   </Card>
                 </div>
 
@@ -294,7 +298,7 @@ function Index() {
                         onClick={() => setActiveRoutineId(r.id)}
                         className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition-all ${
                           active
-                            ? "border-transparent bg-gradient-to-r from-amber-500 to-rose-500 text-slate-200 shadow-md"
+                            ? "border-transparent bg-gradient-to-r from-amber-500 to-rose-500 text-slate-900 shadow-md"
                             : "border-border bg-white text-foreground hover:border-primary/50"
                         }`}
                       >
@@ -307,17 +311,17 @@ function Index() {
 
                 {/* Active routine card */}
                 <Card className="overflow-hidden p-0">
-                  <div className={`bg-gradient-to-br ${activeRoutine.color} p-5 text-slate-200`}>
+                  <div className={`bg-gradient-to-br ${activeRoutine.color} p-5 text-slate-900`}>
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="text-3xl">{activeRoutine.emoji}</span>
                           <h3 className="text-xl font-extrabold">{activeRoutine.name}</h3>
                         </div>
-                        <p className="text-sm text-slate-300">{activeRoutine.description}</p>
+                        <p className="text-sm text-slate-700">{activeRoutine.description}</p>
                       </div>
                       <div className="text-right">
-                        <div className="text-xs uppercase tracking-wider text-slate-300">Hoje</div>
+                        <div className="text-xs uppercase tracking-wider text-slate-700">Hoje</div>
                         <div className="text-2xl font-bold">{tasksDoneToday}/{activeRoutine.tasks.length}</div>
                       </div>
                     </div>
@@ -327,26 +331,51 @@ function Index() {
                   <div className="space-y-2 p-4">
                     {activeRoutine.tasks.map((task) => {
                       const done = !!checklistState.completedToday[task.id];
+                      const reminder = reminders[task.id] || "";
                       return (
-                        <button
+                        <div
                           key={task.id}
-                          onClick={() => handleToggleTask(task.id, task.xp)}
                           className={`flex w-full items-center gap-3 rounded-xl border-2 px-4 py-3 text-left transition-all ${
                             done
                               ? "border-emerald-500/50 bg-emerald-50"
                               : "border-border bg-white hover:border-primary/50 hover:shadow-sm"
                           }`}
                         >
-                          <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${done ? "bg-emerald-500 text-slate-200" : "bg-muted"}`}>
-                            {done ? <CheckCircle2 className="h-5 w-5" /> : <span className="text-lg">{task.emoji}</span>}
+                          <button
+                            onClick={() => handleToggleTask(task.id, task.xp)}
+                            className="flex flex-1 items-center gap-3 text-left"
+                          >
+                            <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${done ? "bg-emerald-500 text-slate-900" : "bg-muted"}`}>
+                              {done ? <CheckCircle2 className="h-5 w-5" /> : <span className="text-lg">{task.emoji}</span>}
+                            </div>
+                            <span className={`flex-1 font-medium ${done ? "text-muted-foreground line-through" : ""}`}>
+                              {task.label}
+                            </span>
+                          </button>
+                          <div className="flex items-center gap-1.5">
+                            <label className={`flex items-center gap-1 rounded-full border px-2 py-1 text-xs ${reminder ? "border-sky-500 bg-sky-50 text-sky-700" : "border-border bg-white text-muted-foreground"}`} title="Definir despertador">
+                              <Bell className="h-3.5 w-3.5" />
+                              <input
+                                type="time"
+                                value={reminder}
+                                onChange={(e) => setReminder(task.id, e.target.value)}
+                                className="w-[70px] bg-transparent outline-none"
+                              />
+                              {reminder && (
+                                <button
+                                  onClick={(e) => { e.preventDefault(); setReminder(task.id, ""); }}
+                                  className="ml-0.5 text-sky-700/70 hover:text-sky-900"
+                                  aria-label="Remover despertador"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              )}
+                            </label>
+                            <Badge className={done ? "bg-emerald-500" : "bg-amber-500"}>
+                              <Zap className="mr-1 h-3 w-3" /> {task.xp} XP
+                            </Badge>
                           </div>
-                          <span className={`flex-1 font-medium ${done ? "text-muted-foreground line-through" : ""}`}>
-                            {task.label}
-                          </span>
-                          <Badge className={done ? "bg-emerald-500" : "bg-amber-500"}>
-                            <Zap className="mr-1 h-3 w-3" /> {task.xp} XP
-                          </Badge>
-                        </button>
+                        </div>
                       );
                     })}
                   </div>
