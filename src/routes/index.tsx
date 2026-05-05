@@ -17,9 +17,10 @@ import { Progress } from "@/components/ui/progress";
 import { toast, Toaster } from "sonner";
 import {
   Plus, Trash2, FolderPlus, ShoppingBag, Sparkles, Save, Lightbulb, Folder, X,
-  ListChecks, Flame, Trophy, Gift, Zap, CheckCircle2,
+  ListChecks, Flame, Trophy, Gift, Zap, CheckCircle2, Bell,
 } from "lucide-react";
 import profileLogo from "@/assets/profile-logo.png";
+import { useReminders } from "@/hooks/use-reminders";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -47,6 +48,9 @@ function Index() {
   const [tab, setTab] = useState("explorar");
   const [exploreMode, setExploreMode] = useState<"compras" | "checklist">("compras");
   const [activeRoutineId, setActiveRoutineId] = useState<string>(ROUTINES[0].id);
+  const { reminders, setReminder } = useReminders((id) =>
+    ROUTINES.flatMap((r) => r.tasks).find((t) => t.id === id)?.label ?? "Tarefa"
+  );
 
   const startNewList = (niche: ListNiche) => {
     const list: SavedList = {
