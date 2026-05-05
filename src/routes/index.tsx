@@ -327,26 +327,51 @@ function Index() {
                   <div className="space-y-2 p-4">
                     {activeRoutine.tasks.map((task) => {
                       const done = !!checklistState.completedToday[task.id];
+                      const reminder = reminders[task.id] || "";
                       return (
-                        <button
+                        <div
                           key={task.id}
-                          onClick={() => handleToggleTask(task.id, task.xp)}
                           className={`flex w-full items-center gap-3 rounded-xl border-2 px-4 py-3 text-left transition-all ${
                             done
                               ? "border-emerald-500/50 bg-emerald-50"
                               : "border-border bg-white hover:border-primary/50 hover:shadow-sm"
                           }`}
                         >
-                          <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${done ? "bg-emerald-500 text-slate-900" : "bg-muted"}`}>
-                            {done ? <CheckCircle2 className="h-5 w-5" /> : <span className="text-lg">{task.emoji}</span>}
+                          <button
+                            onClick={() => handleToggleTask(task.id, task.xp)}
+                            className="flex flex-1 items-center gap-3 text-left"
+                          >
+                            <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${done ? "bg-emerald-500 text-slate-900" : "bg-muted"}`}>
+                              {done ? <CheckCircle2 className="h-5 w-5" /> : <span className="text-lg">{task.emoji}</span>}
+                            </div>
+                            <span className={`flex-1 font-medium ${done ? "text-muted-foreground line-through" : ""}`}>
+                              {task.label}
+                            </span>
+                          </button>
+                          <div className="flex items-center gap-1.5">
+                            <label className={`flex items-center gap-1 rounded-full border px-2 py-1 text-xs ${reminder ? "border-sky-500 bg-sky-50 text-sky-700" : "border-border bg-white text-muted-foreground"}`} title="Definir despertador">
+                              <Bell className="h-3.5 w-3.5" />
+                              <input
+                                type="time"
+                                value={reminder}
+                                onChange={(e) => setReminder(task.id, e.target.value)}
+                                className="w-[70px] bg-transparent outline-none"
+                              />
+                              {reminder && (
+                                <button
+                                  onClick={(e) => { e.preventDefault(); setReminder(task.id, ""); }}
+                                  className="ml-0.5 text-sky-700/70 hover:text-sky-900"
+                                  aria-label="Remover despertador"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              )}
+                            </label>
+                            <Badge className={done ? "bg-emerald-500" : "bg-amber-500"}>
+                              <Zap className="mr-1 h-3 w-3" /> {task.xp} XP
+                            </Badge>
                           </div>
-                          <span className={`flex-1 font-medium ${done ? "text-muted-foreground line-through" : ""}`}>
-                            {task.label}
-                          </span>
-                          <Badge className={done ? "bg-emerald-500" : "bg-amber-500"}>
-                            <Zap className="mr-1 h-3 w-3" /> {task.xp} XP
-                          </Badge>
-                        </button>
+                        </div>
                       );
                     })}
                   </div>
