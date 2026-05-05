@@ -122,8 +122,8 @@ function Index() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,oklch(0.62_0.18_235/0.25),transparent_60%)]" />
         <div className="relative mx-auto max-w-6xl px-6 py-10 md:py-14">
           <div className="flex items-center gap-3 text-white">
-            <div className="overflow-hidden rounded-2xl bg-white p-1 ring-1 ring-white/20 shadow-lg">
-              <img src={profileLogo} alt="Planner For You" className="h-12 w-12 rounded-xl object-contain" />
+            <div className="overflow-hidden rounded-2xl bg-white ring-1 ring-white/20 shadow-lg">
+              <img src={profileLogo} alt="Planner For You" className="h-14 w-14 rounded-2xl object-cover" />
             </div>
             <div>
               <h1 className="bg-gradient-to-r from-white via-emerald-200 to-sky-300 bg-clip-text text-2xl font-extrabold tracking-tight text-transparent md:text-3xl">
