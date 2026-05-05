@@ -121,7 +121,7 @@ function Index() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,oklch(0.65_0.17_160/0.35),transparent_60%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,oklch(0.62_0.18_235/0.25),transparent_60%)]" />
         <div className="relative mx-auto max-w-6xl px-6 py-10 md:py-14">
-          <div className="flex items-center gap-3 text-white">
+          <div className="flex items-center gap-3 text-slate-200">
             <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-white ring-1 ring-white/20 shadow-lg">
               <img src={profileLogo} alt="Planner For You" className="h-full w-full rounded-2xl object-contain p-0.5" />
             </div>
@@ -134,7 +134,7 @@ function Index() {
             <div className="ml-auto">
               <Button
                 variant="secondary"
-                className="gap-2 bg-white/10 text-white ring-1 ring-white/20 backdrop-blur hover:bg-white/20"
+                className="gap-2 bg-white/10 text-slate-200 ring-1 ring-white/20 backdrop-blur hover:bg-white/20"
                 onClick={() => setFeedbackOpen(true)}
               >
                 <Lightbulb className="h-4 w-4 text-amber-300" />
@@ -148,10 +148,10 @@ function Index() {
       <main className="mx-auto max-w-6xl px-4 py-8 md:px-6">
         <Tabs value={tab} onValueChange={setTab} className="w-full">
           <TabsList className="grid w-full max-w-md grid-cols-2 rounded-full bg-white shadow-sm">
-            <TabsTrigger value="explorar" className="rounded-full data-[state=active]:bg-[var(--gradient-hero)] data-[state=active]:text-white">
+            <TabsTrigger value="explorar" className="rounded-full data-[state=active]:bg-[var(--gradient-hero)] data-[state=active]:text-slate-200">
               <Sparkles className="mr-2 h-4 w-4" /> Explorar
             </TabsTrigger>
-            <TabsTrigger value="minhas" className="rounded-full data-[state=active]:bg-[var(--gradient-hero)] data-[state=active]:text-white">
+            <TabsTrigger value="minhas" className="rounded-full data-[state=active]:bg-[var(--gradient-hero)] data-[state=active]:text-slate-200">
               <Folder className="mr-2 h-4 w-4" /> Minhas listas
               {lists.length > 0 && <Badge className="ml-2 bg-white/30">{lists.length}</Badge>}
             </TabsTrigger>
@@ -166,7 +166,7 @@ function Index() {
                   onClick={() => setExploreMode("compras")}
                   className={`rounded-full px-5 py-2 text-base font-bold transition-all ${
                     exploreMode === "compras"
-                      ? "bg-[var(--gradient-hero)] text-white shadow-md"
+                      ? "bg-[var(--gradient-hero)] text-slate-200 shadow-md"
                       : "bg-white text-foreground hover:bg-muted"
                   }`}
                 >
@@ -176,7 +176,7 @@ function Index() {
                   onClick={() => setExploreMode("checklist")}
                   className={`rounded-full px-5 py-2 text-base font-bold transition-all ${
                     exploreMode === "checklist"
-                      ? "bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-md"
+                      ? "bg-gradient-to-r from-amber-500 to-rose-500 text-slate-200 shadow-md"
                       : "bg-white text-foreground hover:bg-muted"
                   }`}
                 >
@@ -202,7 +202,7 @@ function Index() {
                         onClick={() => setActiveNiche(n)}
                         className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition-all ${
                           active
-                            ? "border-transparent bg-[var(--gradient-hero)] text-white shadow-md"
+                            ? "border-transparent bg-[var(--gradient-hero)] text-slate-200 shadow-md"
                             : "border-border bg-white text-foreground hover:border-primary/50"
                         }`}
                       >
@@ -222,7 +222,7 @@ function Index() {
                         className="group relative cursor-pointer overflow-hidden border-border/60 p-0 transition-all hover:-translate-y-1 hover:shadow-[var(--shadow-elegant)]"
                         onClick={() => startNewList(n)}
                       >
-                        <div className={`bg-gradient-to-br ${n.color} p-5 text-white`}>
+                        <div className={`bg-gradient-to-br ${n.color} p-5 text-slate-200`}>
                           <div className="flex items-start justify-between">
                             <div className="rounded-xl bg-white/20 p-2.5 backdrop-blur">
                               <Icon className="h-5 w-5" />
@@ -230,7 +230,7 @@ function Index() {
                             <span className="text-3xl">{n.emoji}</span>
                           </div>
                           <h3 className="mt-4 text-lg font-bold">{n.name}</h3>
-                          <p className="text-sm text-white/85">{n.description}</p>
+                          <p className="text-sm text-slate-300">{n.description}</p>
                         </div>
                         <div className="flex items-center justify-between p-4">
                           <span className="text-xs text-muted-foreground">{n.defaultItems.length} itens • {n.actions.length} ações</span>
@@ -247,7 +247,7 @@ function Index() {
               <section>
                 {/* Gamification dashboard */}
                 <div className="mb-6 grid grid-cols-1 gap-3 md:grid-cols-3">
-                  <Card className="overflow-hidden border-0 bg-gradient-to-br from-slate-900 to-slate-700 p-5 text-white">
+                  <Card className="overflow-hidden border-0 bg-gradient-to-br from-slate-900 to-slate-700 p-5 text-slate-200">
                     <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-slate-300">
                       <Trophy className="h-4 w-4" /> Rank atual
                     </div>
@@ -267,20 +267,20 @@ function Index() {
                     )}
                   </Card>
 
-                  <Card className="border-0 bg-gradient-to-br from-amber-500 to-orange-600 p-5 text-white">
-                    <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-white/85">
+                  <Card className="border-0 bg-gradient-to-br from-amber-500 to-orange-600 p-5 text-slate-200">
+                    <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-slate-300">
                       <Zap className="h-4 w-4" /> XP total
                     </div>
                     <div className="mt-2 text-4xl font-extrabold">{checklistState.xp}</div>
-                    <p className="mt-1 text-xs text-white/80">{checklistState.totalCompletions} tarefas concluídas</p>
+                    <p className="mt-1 text-xs text-slate-300">{checklistState.totalCompletions} tarefas concluídas</p>
                   </Card>
 
-                  <Card className="border-0 bg-gradient-to-br from-rose-500 to-fuchsia-600 p-5 text-white">
-                    <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-white/85">
+                  <Card className="border-0 bg-gradient-to-br from-rose-500 to-fuchsia-600 p-5 text-slate-200">
+                    <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-slate-300">
                       <Flame className="h-4 w-4" /> Streak
                     </div>
                     <div className="mt-2 text-4xl font-extrabold">{checklistState.streak} 🔥</div>
-                    <p className="mt-1 text-xs text-white/80">dias consecutivos</p>
+                    <p className="mt-1 text-xs text-slate-300">dias consecutivos</p>
                   </Card>
                 </div>
 
@@ -294,7 +294,7 @@ function Index() {
                         onClick={() => setActiveRoutineId(r.id)}
                         className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition-all ${
                           active
-                            ? "border-transparent bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-md"
+                            ? "border-transparent bg-gradient-to-r from-amber-500 to-rose-500 text-slate-200 shadow-md"
                             : "border-border bg-white text-foreground hover:border-primary/50"
                         }`}
                       >
@@ -307,17 +307,17 @@ function Index() {
 
                 {/* Active routine card */}
                 <Card className="overflow-hidden p-0">
-                  <div className={`bg-gradient-to-br ${activeRoutine.color} p-5 text-white`}>
+                  <div className={`bg-gradient-to-br ${activeRoutine.color} p-5 text-slate-200`}>
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="text-3xl">{activeRoutine.emoji}</span>
                           <h3 className="text-xl font-extrabold">{activeRoutine.name}</h3>
                         </div>
-                        <p className="text-sm text-white/85">{activeRoutine.description}</p>
+                        <p className="text-sm text-slate-300">{activeRoutine.description}</p>
                       </div>
                       <div className="text-right">
-                        <div className="text-xs uppercase tracking-wider text-white/85">Hoje</div>
+                        <div className="text-xs uppercase tracking-wider text-slate-300">Hoje</div>
                         <div className="text-2xl font-bold">{tasksDoneToday}/{activeRoutine.tasks.length}</div>
                       </div>
                     </div>
@@ -337,7 +337,7 @@ function Index() {
                               : "border-border bg-white hover:border-primary/50 hover:shadow-sm"
                           }`}
                         >
-                          <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${done ? "bg-emerald-500 text-white" : "bg-muted"}`}>
+                          <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${done ? "bg-emerald-500 text-slate-200" : "bg-muted"}`}>
                             {done ? <CheckCircle2 className="h-5 w-5" /> : <span className="text-lg">{task.emoji}</span>}
                           </div>
                           <span className={`flex-1 font-medium ${done ? "text-muted-foreground line-through" : ""}`}>
