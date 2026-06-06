@@ -187,11 +187,23 @@ function Index() {
                 >
                   <ListChecks className="mr-1.5 inline h-4 w-4" /> Checklist
                 </button>
+                <button
+                  onClick={() => setExploreMode("contas")}
+                  className={`rounded-full px-5 py-2 text-base font-bold transition-all ${
+                    exploreMode === "contas"
+                      ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-900 shadow-md"
+                      : "bg-white text-foreground hover:bg-muted"
+                  }`}
+                >
+                  <Wallet className="mr-1.5 inline h-4 w-4" /> Controle de Contas
+                </button>
               </div>
               <p className="text-sm text-muted-foreground">
                 {exploreMode === "compras"
                   ? "Escolha um estilo e crie sua lista em segundos"
-                  : "Cumpra rotinas, ganhe XP e suba de rank 🏆"}
+                  : exploreMode === "checklist"
+                  ? "Cumpra rotinas, ganhe XP e suba de rank 🏆"
+                  : "Gerencie suas contas, alarmes e vencimentos 💸"}
               </p>
             </div>
 
