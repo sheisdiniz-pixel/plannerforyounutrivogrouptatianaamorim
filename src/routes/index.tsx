@@ -207,7 +207,9 @@ function Index() {
               </p>
             </div>
 
-            {exploreMode === "compras" ? (
+            {exploreMode === "contas" ? (
+              <BillsControl />
+            ) : exploreMode === "compras" ? (
               <section>
                 {/* Niche pills */}
                 <div className="mb-6 flex gap-2 overflow-x-auto pb-2">
