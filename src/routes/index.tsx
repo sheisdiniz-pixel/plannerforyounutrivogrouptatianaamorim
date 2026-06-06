@@ -17,10 +17,11 @@ import { Progress } from "@/components/ui/progress";
 import { toast, Toaster } from "sonner";
 import {
   Plus, Trash2, FolderPlus, ShoppingBag, Sparkles, Save, Lightbulb, Folder, X,
-  ListChecks, Flame, Trophy, Gift, Zap, CheckCircle2, Bell,
+  ListChecks, Flame, Trophy, Gift, Zap, CheckCircle2, Bell, Wallet,
 } from "lucide-react";
 import profileLogo from "@/assets/profile-logo.png";
 import { useReminders } from "@/hooks/use-reminders";
+import BillsControl from "@/components/BillsControl";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -46,7 +47,7 @@ function Index() {
   const [feedback, setFeedback] = useState("");
   const [folderInput, setFolderInput] = useState("");
   const [tab, setTab] = useState("explorar");
-  const [exploreMode, setExploreMode] = useState<"compras" | "checklist">("compras");
+  const [exploreMode, setExploreMode] = useState<"compras" | "checklist" | "contas">("compras");
   const [activeRoutineId, setActiveRoutineId] = useState<string>(ROUTINES[0].id);
   const { reminders, setReminder } = useReminders((id) =>
     ROUTINES.flatMap((r) => r.tasks).find((t) => t.id === id)?.label ?? "Tarefa"
@@ -186,15 +187,29 @@ function Index() {
                 >
                   <ListChecks className="mr-1.5 inline h-4 w-4" /> Checklist
                 </button>
+                <button
+                  onClick={() => setExploreMode("contas")}
+                  className={`rounded-full px-5 py-2 text-base font-bold transition-all ${
+                    exploreMode === "contas"
+                      ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-900 shadow-md"
+                      : "bg-white text-foreground hover:bg-muted"
+                  }`}
+                >
+                  <Wallet className="mr-1.5 inline h-4 w-4" /> Controle de Contas
+                </button>
               </div>
               <p className="text-sm text-muted-foreground">
                 {exploreMode === "compras"
                   ? "Escolha um estilo e crie sua lista em segundos"
-                  : "Cumpra rotinas, ganhe XP e suba de rank 🏆"}
+                  : exploreMode === "checklist"
+                  ? "Cumpra rotinas, ganhe XP e suba de rank 🏆"
+                  : "Gerencie suas contas, alarmes e vencimentos 💸"}
               </p>
             </div>
 
-            {exploreMode === "compras" ? (
+            {exploreMode === "contas" ? (
+              <BillsControl />
+            ) : exploreMode === "compras" ? (
               <section>
                 {/* Niche pills */}
                 <div className="mb-6 flex gap-2 overflow-x-auto pb-2">
