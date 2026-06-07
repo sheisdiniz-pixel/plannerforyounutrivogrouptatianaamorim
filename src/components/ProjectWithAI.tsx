@@ -58,9 +58,9 @@ export default function ProjectWithAI() {
             <Bot className="h-7 w-7 text-white" />
           </div>
           <div>
-            <h2 className="text-xl font-extrabold tracking-tight">Desenvolva seu Projeto com o Claude</h2>
+            <h2 className="text-xl font-extrabold tracking-tight">Crie Seus Projetos com IA e Ganhe Tempo</h2>
             <p className="mt-1 text-sm text-purple-100">
-              Acesse seus documentos estratégicos e ferramentas de IA em um só lugar
+              Tudo o que você precisa para produzir mais, vender melhor e crescer online — em um só lugar.
             </p>
           </div>
         </div>
