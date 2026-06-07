@@ -38,6 +38,24 @@ function uid() {
   return Math.random().toString(36).slice(2, 10);
 }
 
+// ─── Design tokens ────────────────────────────────────────────────────────────
+const BRAND = {
+  bg: "#0f1e2a",           // fundo escuro principal
+  bgMid: "#162535",        // fundo cards/seções
+  bgLight: "#1d3045",      // bordas e separadores
+  accent: "#2dd4bf",       // teal vibrante — cor de destaque
+  accentDim: "#0d9488",    // versão mais escura do accent
+  gold: "#f59e0b",         // dourado XP/rank
+  rose: "#f43f5e",         // streak/vermelho
+  text: "#e2f0f9",         // texto principal
+  textMuted: "#7a9db8",    // texto secundário
+  white: "#ffffff",
+};
+
+const headerGradient = `linear-gradient(135deg, #0f1e2a 0%, #162535 50%, #1a3a4a 100%)`;
+const accentGradient = `linear-gradient(135deg, ${BRAND.accent} 0%, #3b82f6 100%)`;
+
+// ─── Componente principal ─────────────────────────────────────────────────────
 function Index() {
   const { lists, folders, saveList, deleteList, addFolder } = useLists();
   const { state: checklistState, toggleTask } = useChecklist();
@@ -112,354 +130,335 @@ function Index() {
   const handleToggleTask = (taskId: string, xp: number) => {
     const wasDone = !!checklistState.completedToday[taskId];
     toggleTask(taskId, xp);
-    if (!wasDone) {
-      toast.success(`+${xp} XP`, { description: "Tarefa concluída! 🎉" });
-    }
+    if (!wasDone) toast.success(`+${xp} XP`, { description: "Tarefa concluída! 🎉" });
   };
 
+  // ─── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-background to-slate-100">
+    <div style={{ minHeight: "100vh", background: BRAND.bg, color: BRAND.text, fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
       <Toaster position="top-center" richColors />
 
-      {/* Hero header — graphite/charcoal for emphasis */}
-      <header className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,oklch(0.65_0.17_160/0.35),transparent_60%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,oklch(0.62_0.18_235/0.25),transparent_60%)]" />
-        <div className="relative mx-auto max-w-6xl px-6 py-10 md:py-14">
-          <div className="flex items-center gap-3 text-slate-900">
-            <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-white ring-1 ring-white/20 shadow-lg">
-              <img src={profileLogo} alt="Planner For You" className="h-full w-full rounded-2xl object-contain p-0.5" />
-            </div>
-            <div>
-              <h1 className="bg-gradient-to-r from-white via-emerald-200 to-sky-300 bg-clip-text text-2xl font-extrabold tracking-tight text-transparent md:text-3xl">
-                Planner For You
-              </h1>
-              <p className="text-sm text-slate-700">Listas e rotinas inteligentes</p>
-            </div>
-            <div className="ml-auto">
-              <Button
-                variant="secondary"
-                className="gap-2 bg-white/10 text-slate-900 ring-1 ring-white/20 backdrop-blur hover:bg-white/20"
-                onClick={() => setFeedbackOpen(true)}
-              >
-                <Lightbulb className="h-4 w-4 text-amber-300" />
-                <span className="hidden sm:inline">Sugestões</span>
-              </Button>
-            </div>
+      {/* ── HEADER ── */}
+      <header style={{ background: headerGradient, borderBottom: `1px solid ${BRAND.bgLight}`, position: "sticky", top: 0, zIndex: 50 }}>
+        <div style={{ maxWidth: 720, margin: "0 auto", padding: "14px 16px", display: "flex", alignItems: "center", gap: 12 }}>
+          {/* Logo */}
+          <div style={{ width: 48, height: 48, borderRadius: 14, overflow: "hidden", background: BRAND.bgLight, flexShrink: 0, border: `1px solid ${BRAND.bgLight}` }}>
+            <img src={profileLogo} alt="Planner For You" style={{ width: "100%", height: "100%", objectFit: "contain", padding: 2 }} />
           </div>
+
+          {/* Title */}
+          <div style={{ flex: 1 }}>
+            <h1 style={{ margin: 0, fontSize: 18, fontWeight: 800, letterSpacing: "-0.3px", lineHeight: 1.2 }}>
+              <span style={{ color: BRAND.white }}>Planner </span>
+              <span style={{ color: BRAND.accent }}>For You</span>
+            </h1>
+            <p style={{ margin: 0, fontSize: 11, color: BRAND.textMuted, marginTop: 1 }}>Listas e rotinas inteligentes</p>
+          </div>
+
+          {/* Suggestions button */}
+          <button
+            onClick={() => setFeedbackOpen(true)}
+            style={{
+              background: BRAND.bgLight, border: `1px solid ${BRAND.bgLight}`, borderRadius: 10,
+              padding: "8px 12px", color: BRAND.text, fontSize: 13, fontWeight: 600,
+              cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
+            }}
+          >
+            <Lightbulb size={14} color={BRAND.gold} />
+            <span style={{ display: "none" }} className="sm:inline">Sugestões</span>
+          </button>
+        </div>
+
+        {/* ── TABS: Explorar / Minhas listas ── */}
+        <div style={{ maxWidth: 720, margin: "0 auto", padding: "0 16px 12px", display: "flex", gap: 8 }}>
+          {[
+            { value: "explorar", label: "Explorar", icon: <Sparkles size={14} /> },
+            { value: "minhas", label: "Minhas listas", icon: <Folder size={14} />, badge: lists.length > 0 ? lists.length : null },
+          ].map((t) => (
+            <button
+              key={t.value}
+              onClick={() => setTab(t.value)}
+              style={{
+                flex: 1, padding: "9px 0", borderRadius: 10, border: "none", cursor: "pointer",
+                fontWeight: 700, fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                transition: "all 0.2s",
+                background: tab === t.value ? BRAND.accent : BRAND.bgLight,
+                color: tab === t.value ? BRAND.bg : BRAND.textMuted,
+              }}
+            >
+              {t.icon} {t.label}
+              {t.badge && (
+                <span style={{ background: BRAND.bg, color: BRAND.accent, borderRadius: 20, padding: "1px 7px", fontSize: 11, fontWeight: 800 }}>
+                  {t.badge}
+                </span>
+              )}
+            </button>
+          ))}
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 py-8 md:px-6">
-        <Tabs value={tab} onValueChange={setTab} className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-2 rounded-full bg-white shadow-sm">
-            <TabsTrigger value="explorar" className="rounded-full data-[state=active]:bg-[var(--gradient-hero)] data-[state=active]:text-slate-900">
-              <Sparkles className="mr-2 h-4 w-4" /> Explorar
-            </TabsTrigger>
-            <TabsTrigger value="minhas" className="rounded-full data-[state=active]:bg-[var(--gradient-hero)] data-[state=active]:text-slate-900">
-              <Folder className="mr-2 h-4 w-4" /> Minhas listas
-              {lists.length > 0 && <Badge className="ml-2 bg-white/30">{lists.length}</Badge>}
-            </TabsTrigger>
-          </TabsList>
+      <main style={{ maxWidth: 720, margin: "0 auto", padding: "16px 16px 32px" }}>
 
-          {/* EXPLORAR */}
-          <TabsContent value="explorar" className="mt-6">
-            {/* Section switcher: Compras | Checklist | Contas | IA */}
-            <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-              <div className="flex items-center gap-2">
+        {/* ════════════ EXPLORAR ════════════ */}
+        {tab === "explorar" && (
+          <>
+            {/* Mode switcher */}
+            <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4, marginBottom: 16, scrollbarWidth: "none" }}>
+              {[
+                { mode: "compras", label: "Compras", icon: <ShoppingBag size={14} />, color: BRAND.accent },
+                { mode: "checklist", label: "Checklist", icon: <ListChecks size={14} />, color: "#f59e0b" },
+                { mode: "contas", label: "Contas", icon: <Wallet size={14} />, color: "#10b981" },
+                { mode: "ia", label: "IA", icon: <Bot size={14} />, color: "#a78bfa" },
+              ].map((m) => (
                 <button
-                  onClick={() => setExploreMode("compras")}
-                  className={`rounded-full px-5 py-2 text-base font-bold transition-all ${
-                    exploreMode === "compras"
-                      ? "bg-[var(--gradient-hero)] text-slate-900 shadow-md"
-                      : "bg-white text-foreground hover:bg-muted"
-                  }`}
+                  key={m.mode}
+                  onClick={() => setExploreMode(m.mode as typeof exploreMode)}
+                  style={{
+                    flexShrink: 0, padding: "9px 16px", borderRadius: 24,
+                    border: exploreMode === m.mode ? "none" : `1.5px solid ${BRAND.bgLight}`,
+                    background: exploreMode === m.mode ? m.color : BRAND.bgMid,
+                    color: exploreMode === m.mode ? BRAND.bg : BRAND.textMuted,
+                    fontWeight: 700, fontSize: 13, cursor: "pointer",
+                    display: "flex", alignItems: "center", gap: 6,
+                    transition: "all 0.2s",
+                  }}
                 >
-                  <ShoppingBag className="mr-1.5 inline h-4 w-4" /> Compras
+                  {m.icon} {m.label}
                 </button>
-                <button
-                  onClick={() => setExploreMode("checklist")}
-                  className={`rounded-full px-5 py-2 text-base font-bold transition-all ${
-                    exploreMode === "checklist"
-                      ? "bg-gradient-to-r from-amber-500 to-rose-500 text-slate-900 shadow-md"
-                      : "bg-white text-foreground hover:bg-muted"
-                  }`}
-                >
-                  <ListChecks className="mr-1.5 inline h-4 w-4" /> Checklist
-                </button>
-                <button
-                  onClick={() => setExploreMode("contas")}
-                  className={`rounded-full px-5 py-2 text-base font-bold transition-all ${
-                    exploreMode === "contas"
-                      ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-900 shadow-md"
-                      : "bg-white text-foreground hover:bg-muted"
-                  }`}
-                >
-                  <Wallet className="mr-1.5 inline h-4 w-4" /> Controle de Contas
-                </button>
-                <button
-                  onClick={() => setExploreMode("ia")}
-                  className={`rounded-full px-5 py-2 text-base font-bold transition-all ${
-                    exploreMode === "ia"
-                      ? "bg-gradient-to-r from-violet-500 to-indigo-600 text-slate-900 shadow-md"
-                      : "bg-white text-foreground hover:bg-muted"
-                  }`}
-                >
-                  <Bot className="mr-1.5 inline h-4 w-4" /> IA
-                </button>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                {exploreMode === "compras"
-                  ? "Escolha um estilo e crie sua lista em segundos"
-                  : exploreMode === "checklist"
-                  ? "Cumpra rotinas, ganhe XP e suba de rank 🏆"
-                  : exploreMode === "contas"
-                  ? "Gerencie suas contas, alarmes e vencimentos 💸"
-                  : "Desenvolva projetos com inteligência artificial 🤖"}
-              </p>
+              ))}
             </div>
 
-            {exploreMode === "ia" ? (
-              <ProjectWithAI />
-            ) : exploreMode === "contas" ? (
-              <BillsControl />
-            ) : exploreMode === "compras" ? (
+            {/* Subtitle */}
+            <p style={{ fontSize: 13, color: BRAND.textMuted, marginBottom: 16, marginTop: 0 }}>
+              {exploreMode === "compras" && "Escolha um estilo e crie sua lista em segundos"}
+              {exploreMode === "checklist" && "Cumpra rotinas, ganhe XP e suba de rank 🏆"}
+              {exploreMode === "contas" && "Gerencie suas contas, alarmes e vencimentos 💸"}
+              {exploreMode === "ia" && "Desenvolva projetos com inteligência artificial 🤖"}
+            </p>
+
+            {/* ── IA ── */}
+            {exploreMode === "ia" && <ProjectWithAI />}
+
+            {/* ── CONTAS ── */}
+            {exploreMode === "contas" && <BillsControl />}
+
+            {/* ── COMPRAS ── */}
+            {exploreMode === "compras" && (
               <section>
                 {/* Niche pills */}
-                <div className="mb-6 flex gap-2 overflow-x-auto pb-2">
+                <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8, marginBottom: 16, scrollbarWidth: "none" }}>
                   {NICHES.map((n) => {
                     const active = activeNiche.id === n.id;
                     return (
                       <button
                         key={n.id}
                         onClick={() => setActiveNiche(n)}
-                        className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition-all ${
-                          active
-                            ? "border-transparent bg-[var(--gradient-hero)] text-slate-900 shadow-md"
-                            : "border-border bg-white text-foreground hover:border-primary/50"
-                        }`}
+                        style={{
+                          flexShrink: 0, borderRadius: 20, padding: "7px 14px", fontSize: 13, fontWeight: 600,
+                          cursor: "pointer", transition: "all 0.15s",
+                          border: active ? "none" : `1.5px solid ${BRAND.bgLight}`,
+                          background: active ? accentGradient : BRAND.bgMid,
+                          color: active ? BRAND.bg : BRAND.textMuted,
+                        }}
                       >
-                        <span className="mr-1.5">{n.emoji}</span>
-                        {n.name}
+                        <span style={{ marginRight: 4 }}>{n.emoji}</span>{n.name}
                       </button>
                     );
                   })}
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {/* Cards grid */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
                   {NICHES.map((n) => {
                     const Icon = n.icon;
                     return (
-                      <Card
+                      <div
                         key={n.id}
-                        className="group relative cursor-pointer overflow-hidden border-border/60 p-0 transition-all hover:-translate-y-1 hover:shadow-[var(--shadow-elegant)]"
                         onClick={() => startNewList(n)}
+                        style={{
+                          background: BRAND.bgMid, borderRadius: 16, overflow: "hidden",
+                          border: `1px solid ${BRAND.bgLight}`, cursor: "pointer",
+                          transition: "transform 0.15s, box-shadow 0.15s",
+                        }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = "translateY(-2px)"; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 8px 24px rgba(0,0,0,0.4)`; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = ""; (e.currentTarget as HTMLDivElement).style.boxShadow = ""; }}
                       >
-                        <div className={`bg-gradient-to-br ${n.color} p-5 text-slate-900`}>
-                          <div className="flex items-start justify-between">
-                            <div className="rounded-xl bg-white/20 p-2.5 backdrop-blur">
-                              <Icon className="h-5 w-5" />
-                            </div>
-                            <span className="text-3xl">{n.emoji}</span>
+                        <div style={{ padding: "14px 14px 10px", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                          <div style={{ background: BRAND.bgLight, borderRadius: 10, padding: 8 }}>
+                            <Icon size={16} color={BRAND.accent} />
                           </div>
-                          <h3 className="mt-4 text-lg font-bold">{n.name}</h3>
-                          <p className="text-sm text-slate-700">{n.description}</p>
+                          <span style={{ fontSize: 24 }}>{n.emoji}</span>
                         </div>
-                        <div className="flex items-center justify-between p-4">
-                          <span className="text-xs text-muted-foreground">{n.defaultItems.length} itens • {n.actions.length} ações</span>
-                          <Button size="sm" className="gap-1 rounded-full">
-                            <Plus className="h-4 w-4" /> Criar
-                          </Button>
+                        <div style={{ padding: "0 14px 14px" }}>
+                          <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 2, color: BRAND.text }}>{n.name}</div>
+                          <div style={{ fontSize: 11, color: BRAND.textMuted, marginBottom: 10 }}>{n.description}</div>
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                            <span style={{ fontSize: 11, color: BRAND.textMuted }}>{n.defaultItems.length} itens</span>
+                            <span style={{ background: accentGradient, color: BRAND.bg, borderRadius: 8, padding: "4px 10px", fontSize: 12, fontWeight: 700 }}>
+                              + Criar
+                            </span>
+                          </div>
                         </div>
-                      </Card>
+                      </div>
                     );
                   })}
                 </div>
               </section>
-            ) : (
+            )}
+
+            {/* ── CHECKLIST ── */}
+            {exploreMode === "checklist" && (
               <section>
-                {/* Gamification dashboard */}
-                <div className="mb-6 grid grid-cols-1 gap-3 md:grid-cols-3">
-                  <Card className="overflow-hidden border-0 bg-gradient-to-br from-slate-900 to-slate-700 p-5 text-slate-900">
-                    <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-slate-700">
-                      <Trophy className="h-4 w-4" /> Rank atual
+                {/* XP dashboard */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 16 }}>
+                  {[
+                    { icon: <Trophy size={14} />, label: "Rank", value: `${rank.current.emoji} ${rank.current.name}`, color: BRAND.gold },
+                    { icon: <Zap size={14} />, label: "XP Total", value: checklistState.xp, color: BRAND.accent },
+                    { icon: <Flame size={14} />, label: "Streak", value: `${checklistState.streak} 🔥`, color: BRAND.rose },
+                  ].map((stat) => (
+                    <div key={stat.label} style={{ background: BRAND.bgMid, border: `1px solid ${BRAND.bgLight}`, borderRadius: 14, padding: "12px 10px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11, color: BRAND.textMuted, marginBottom: 4 }}>
+                        <span style={{ color: stat.color }}>{stat.icon}</span> {stat.label}
+                      </div>
+                      <div style={{ fontSize: 18, fontWeight: 800, color: BRAND.text }}>{stat.value}</div>
                     </div>
-                    <div className="mt-2 flex items-baseline gap-2">
-                      <span className="text-3xl">{rank.current.emoji}</span>
-                      <span className="text-2xl font-extrabold">{rank.current.name}</span>
-                    </div>
-                    {rank.next ? (
-                      <>
-                        <Progress value={rank.progress} className="mt-3 bg-white/15" />
-                        <p className="mt-1.5 text-xs text-slate-700">
-                          {rank.next.min - checklistState.xp} XP para {rank.next.emoji} {rank.next.name}
-                        </p>
-                      </>
-                    ) : (
-                      <p className="mt-3 text-xs text-amber-300">Você atingiu o rank máximo! 👑</p>
-                    )}
-                  </Card>
-
-                  <Card className="border-0 bg-gradient-to-br from-amber-500 to-orange-600 p-5 text-slate-900">
-                    <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-slate-700">
-                      <Zap className="h-4 w-4" /> XP total
-                    </div>
-                    <div className="mt-2 text-4xl font-extrabold">{checklistState.xp}</div>
-                    <p className="mt-1 text-xs text-slate-700">{checklistState.totalCompletions} tarefas concluídas</p>
-                  </Card>
-
-                  <Card className="border-0 bg-gradient-to-br from-rose-500 to-fuchsia-600 p-5 text-slate-900">
-                    <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-slate-700">
-                      <Flame className="h-4 w-4" /> Streak
-                    </div>
-                    <div className="mt-2 text-4xl font-extrabold">{checklistState.streak} 🔥</div>
-                    <p className="mt-1 text-xs text-slate-700">dias consecutivos</p>
-                  </Card>
+                  ))}
                 </div>
 
                 {/* Routine selector */}
-                <div className="mb-5 flex gap-2 overflow-x-auto pb-2">
+                <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8, marginBottom: 12, scrollbarWidth: "none" }}>
                   {ROUTINES.map((r) => {
                     const active = activeRoutineId === r.id;
                     return (
                       <button
                         key={r.id}
                         onClick={() => setActiveRoutineId(r.id)}
-                        className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition-all ${
-                          active
-                            ? "border-transparent bg-gradient-to-r from-amber-500 to-rose-500 text-slate-900 shadow-md"
-                            : "border-border bg-white text-foreground hover:border-primary/50"
-                        }`}
+                        style={{
+                          flexShrink: 0, borderRadius: 20, padding: "7px 14px", fontSize: 13, fontWeight: 600,
+                          cursor: "pointer", transition: "all 0.15s",
+                          border: active ? "none" : `1.5px solid ${BRAND.bgLight}`,
+                          background: active ? "#f59e0b" : BRAND.bgMid,
+                          color: active ? BRAND.bg : BRAND.textMuted,
+                        }}
                       >
-                        <span className="mr-1.5">{r.emoji}</span>
-                        {r.name}
+                        {r.emoji} {r.name}
                       </button>
                     );
                   })}
                 </div>
 
-                {/* Active routine card */}
-                <Card className="overflow-hidden p-0">
-                  <div className={`bg-gradient-to-br ${activeRoutine.color} p-5 text-slate-900`}>
-                    <div className="flex items-center justify-between">
+                {/* Active routine */}
+                <div style={{ background: BRAND.bgMid, borderRadius: 16, border: `1px solid ${BRAND.bgLight}`, overflow: "hidden", marginBottom: 20 }}>
+                  <div style={{ padding: "16px", borderBottom: `1px solid ${BRAND.bgLight}` }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-3xl">{activeRoutine.emoji}</span>
-                          <h3 className="text-xl font-extrabold">{activeRoutine.name}</h3>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <span style={{ fontSize: 24 }}>{activeRoutine.emoji}</span>
+                          <span style={{ fontWeight: 800, fontSize: 16 }}>{activeRoutine.name}</span>
                         </div>
-                        <p className="text-sm text-slate-700">{activeRoutine.description}</p>
+                        <p style={{ margin: "2px 0 0", fontSize: 12, color: BRAND.textMuted }}>{activeRoutine.description}</p>
                       </div>
-                      <div className="text-right">
-                        <div className="text-xs uppercase tracking-wider text-slate-700">Hoje</div>
-                        <div className="text-2xl font-bold">{tasksDoneToday}/{activeRoutine.tasks.length}</div>
+                      <div style={{ textAlign: "right" }}>
+                        <div style={{ fontSize: 11, color: BRAND.textMuted }}>Hoje</div>
+                        <div style={{ fontSize: 22, fontWeight: 800, color: BRAND.accent }}>{tasksDoneToday}/{activeRoutine.tasks.length}</div>
                       </div>
                     </div>
-                    <Progress value={dayProgress} className="mt-3 bg-white/20" />
+                    <div style={{ marginTop: 10, height: 6, background: BRAND.bgLight, borderRadius: 99, overflow: "hidden" }}>
+                      <div style={{ height: "100%", width: `${dayProgress}%`, background: accentGradient, borderRadius: 99, transition: "width 0.4s" }} />
+                    </div>
                   </div>
 
-                  <div className="space-y-2 p-4">
+                  <div style={{ padding: "10px 12px", display: "flex", flexDirection: "column", gap: 8 }}>
                     {activeRoutine.tasks.map((task) => {
                       const done = !!checklistState.completedToday[task.id];
                       const reminder = reminders[task.id] || "";
                       return (
                         <div
                           key={task.id}
-                          className={`flex w-full items-center gap-3 rounded-xl border-2 px-4 py-3 text-left transition-all ${
-                            done
-                              ? "border-emerald-500/50 bg-emerald-50"
-                              : "border-border bg-white hover:border-primary/50 hover:shadow-sm"
-                          }`}
+                          style={{
+                            display: "flex", alignItems: "center", gap: 10, borderRadius: 12, padding: "10px 12px",
+                            background: done ? "rgba(45,212,191,0.08)" : BRAND.bg,
+                            border: `1.5px solid ${done ? BRAND.accent : BRAND.bgLight}`,
+                            transition: "all 0.2s",
+                          }}
                         >
                           <button
                             onClick={() => handleToggleTask(task.id, task.xp)}
-                            className="flex flex-1 items-center gap-3 text-left"
+                            style={{
+                              width: 34, height: 34, borderRadius: "50%", border: "none", cursor: "pointer", flexShrink: 0,
+                              background: done ? BRAND.accent : BRAND.bgLight,
+                              display: "flex", alignItems: "center", justifyContent: "center",
+                            }}
                           >
-                            <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${done ? "bg-emerald-500 text-slate-900" : "bg-muted"}`}>
-                              {done ? <CheckCircle2 className="h-5 w-5" /> : <span className="text-lg">{task.emoji}</span>}
-                            </div>
-                            <span className={`flex-1 font-medium ${done ? "text-muted-foreground line-through" : ""}`}>
-                              {task.label}
-                            </span>
+                            {done ? <CheckCircle2 size={16} color={BRAND.bg} /> : <span style={{ fontSize: 16 }}>{task.emoji}</span>}
                           </button>
-                          <div className="flex items-center gap-1.5">
-                            <label className={`flex items-center gap-1 rounded-full border px-2 py-1 text-xs ${reminder ? "border-sky-500 bg-sky-50 text-sky-700" : "border-border bg-white text-muted-foreground"}`} title="Definir despertador">
-                              <Bell className="h-3.5 w-3.5" />
-                              <input
-                                type="time"
-                                value={reminder}
-                                onChange={(e) => setReminder(task.id, e.target.value)}
-                                className="w-[70px] bg-transparent outline-none"
-                              />
-                              {reminder && (
-                                <button
-                                  onClick={(e) => { e.preventDefault(); setReminder(task.id, ""); }}
-                                  className="ml-0.5 text-sky-700/70 hover:text-sky-900"
-                                  aria-label="Remover despertador"
-                                >
-                                  <X className="h-3 w-3" />
-                                </button>
-                              )}
-                            </label>
-                            <Badge className={done ? "bg-emerald-500" : "bg-amber-500"}>
-                              <Zap className="mr-1 h-3 w-3" /> {task.xp} XP
-                            </Badge>
-                          </div>
+                          <span style={{ flex: 1, fontSize: 14, fontWeight: 500, color: done ? BRAND.textMuted : BRAND.text, textDecoration: done ? "line-through" : "none" }}>
+                            {task.label}
+                          </span>
+                          <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11, color: reminder ? BRAND.accent : BRAND.textMuted, cursor: "pointer" }}>
+                            <Bell size={12} />
+                            <input
+                              type="time"
+                              value={reminder}
+                              onChange={(e) => setReminder(task.id, e.target.value)}
+                              style={{ background: "transparent", border: "none", color: reminder ? BRAND.accent : BRAND.textMuted, fontSize: 11, outline: "none", width: 66 }}
+                            />
+                          </label>
+                          <span style={{ background: done ? BRAND.accent : BRAND.gold, color: BRAND.bg, borderRadius: 8, padding: "3px 8px", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>
+                            +{task.xp}XP
+                          </span>
                         </div>
-                      );
-                    })}
-                  </div>
-                </Card>
-
-                {/* Rewards */}
-                <div className="mt-6">
-                  <h3 className="mb-3 flex items-center gap-2 text-lg font-bold">
-                    <Gift className="h-5 w-5 text-rose-500" /> Recompensas
-                  </h3>
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    {REWARDS.map((rw) => {
-                      const unlocked = checklistState.xp >= rw.xp;
-                      return (
-                        <Card
-                          key={rw.label}
-                          className={`p-4 transition-all ${unlocked ? "border-emerald-500/50 bg-gradient-to-br from-emerald-50 to-white" : "opacity-70"}`}
-                        >
-                          <div className="flex items-start justify-between">
-                            <span className="text-3xl">{rw.emoji}</span>
-                            <Badge variant={unlocked ? "default" : "secondary"} className={unlocked ? "bg-emerald-500" : ""}>
-                              {unlocked ? "Desbloqueado" : `${rw.xp} XP`}
-                            </Badge>
-                          </div>
-                          <p className="mt-2 font-semibold">{rw.label}</p>
-                          {!unlocked && (
-                            <p className="mt-1 text-xs text-muted-foreground">
-                              Faltam {rw.xp - checklistState.xp} XP
-                            </p>
-                          )}
-                        </Card>
                       );
                     })}
                   </div>
                 </div>
 
-                {/* Ranks legend */}
-                <div className="mt-6">
-                  <h3 className="mb-3 flex items-center gap-2 text-lg font-bold">
-                    <Trophy className="h-5 w-5 text-amber-500" /> Ranks
+                {/* Rewards */}
+                <div style={{ marginBottom: 20 }}>
+                  <h3 style={{ fontSize: 15, fontWeight: 700, marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>
+                    <Gift size={16} color={BRAND.rose} /> Recompensas
                   </h3>
-                  <div className="flex flex-wrap gap-2">
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: 10 }}>
+                    {REWARDS.map((rw) => {
+                      const unlocked = checklistState.xp >= rw.xp;
+                      return (
+                        <div key={rw.label} style={{ background: BRAND.bgMid, border: `1px solid ${unlocked ? BRAND.accent : BRAND.bgLight}`, borderRadius: 14, padding: 12, opacity: unlocked ? 1 : 0.6 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                            <span style={{ fontSize: 26 }}>{rw.emoji}</span>
+                            <span style={{ background: unlocked ? BRAND.accent : BRAND.bgLight, color: unlocked ? BRAND.bg : BRAND.textMuted, borderRadius: 8, padding: "3px 8px", fontSize: 10, fontWeight: 700 }}>
+                              {unlocked ? "✓ Desbloqueado" : `${rw.xp} XP`}
+                            </span>
+                          </div>
+                          <p style={{ margin: "8px 0 0", fontSize: 13, fontWeight: 600 }}>{rw.label}</p>
+                          {!unlocked && <p style={{ margin: "2px 0 0", fontSize: 11, color: BRAND.textMuted }}>Faltam {rw.xp - checklistState.xp} XP</p>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Ranks */}
+                <div>
+                  <h3 style={{ fontSize: 15, fontWeight: 700, marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>
+                    <Trophy size={16} color={BRAND.gold} /> Ranks
+                  </h3>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                     {RANKS.map((r) => {
                       const reached = checklistState.xp >= r.min;
                       return (
                         <div
                           key={r.name}
-                          className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm ${
-                            reached ? "border-emerald-500 bg-white" : "border-border bg-muted/40 opacity-60"
-                          }`}
+                          style={{
+                            display: "flex", alignItems: "center", gap: 6, borderRadius: 20,
+                            padding: "6px 12px", fontSize: 13,
+                            border: `1.5px solid ${reached ? BRAND.accent : BRAND.bgLight}`,
+                            background: reached ? "rgba(45,212,191,0.08)" : BRAND.bgMid,
+                            opacity: reached ? 1 : 0.5,
+                          }}
                         >
                           <span>{r.emoji}</span>
-                          <span className="font-semibold">{r.name}</span>
-                          <span className="text-xs text-muted-foreground">{r.min} XP</span>
+                          <span style={{ fontWeight: 600 }}>{r.name}</span>
+                          <span style={{ fontSize: 11, color: BRAND.textMuted }}>{r.min} XP</span>
                         </div>
                       );
                     })}
@@ -467,78 +466,82 @@ function Index() {
                 </div>
               </section>
             )}
-          </TabsContent>
+          </>
+        )}
 
-          {/* MINHAS */}
-          <TabsContent value="minhas" className="mt-6">
-            <div className="mb-5 flex flex-wrap items-center gap-2">
-              <Input
+        {/* ════════════ MINHAS LISTAS ════════════ */}
+        {tab === "minhas" && (
+          <>
+            <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+              <input
                 placeholder="Nova pasta…"
                 value={folderInput}
                 onChange={(e) => setFolderInput(e.target.value)}
-                className="max-w-xs bg-white"
+                style={{
+                  flex: 1, background: BRAND.bgMid, border: `1.5px solid ${BRAND.bgLight}`,
+                  borderRadius: 10, padding: "9px 14px", color: BRAND.text, fontSize: 14, outline: "none",
+                }}
               />
-              <Button
-                variant="outline"
-                onClick={() => {
-                  addFolder(folderInput);
-                  setFolderInput("");
-                  toast.success("Pasta criada");
+              <button
+                onClick={() => { addFolder(folderInput); setFolderInput(""); toast.success("Pasta criada"); }}
+                style={{
+                  background: BRAND.bgLight, border: "none", borderRadius: 10, padding: "9px 14px",
+                  color: BRAND.text, fontWeight: 600, fontSize: 13, cursor: "pointer",
+                  display: "flex", alignItems: "center", gap: 6,
                 }}
               >
-                <FolderPlus className="mr-2 h-4 w-4" /> Adicionar pasta
-              </Button>
+                <FolderPlus size={15} /> Pasta
+              </button>
             </div>
 
             {lists.length === 0 ? (
-              <Card className="flex flex-col items-center gap-3 p-10 text-center">
-                <div className="rounded-full bg-[var(--gradient-soft)] p-4">
-                  <Folder className="h-8 w-8 text-primary" />
-                </div>
-                <h3 className="text-lg font-semibold">Nenhuma lista ainda</h3>
-                <p className="text-sm text-muted-foreground">Vá em Explorar e crie sua primeira lista 🎉</p>
-                <Button onClick={() => setTab("explorar")} className="mt-2">Explorar nichos</Button>
-              </Card>
+              <div style={{ textAlign: "center", padding: "48px 16px", background: BRAND.bgMid, borderRadius: 16, border: `1px solid ${BRAND.bgLight}` }}>
+                <div style={{ fontSize: 40, marginBottom: 12 }}>📋</div>
+                <h3 style={{ fontSize: 16, fontWeight: 700, margin: "0 0 6px" }}>Nenhuma lista ainda</h3>
+                <p style={{ fontSize: 13, color: BRAND.textMuted, margin: "0 0 16px" }}>Vá em Explorar e crie sua primeira lista 🎉</p>
+                <button
+                  onClick={() => setTab("explorar")}
+                  style={{ background: accentGradient, border: "none", borderRadius: 10, padding: "10px 20px", color: BRAND.bg, fontWeight: 700, fontSize: 14, cursor: "pointer" }}
+                >
+                  Explorar nichos
+                </button>
+              </div>
             ) : (
-              <div className="space-y-6">
+              <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
                 {folders.map((folder) => {
                   const items = listsByFolder[folder] ?? [];
                   if (items.length === 0) return null;
                   return (
                     <div key={folder}>
-                      <h3 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-muted-foreground">
-                        <Folder className="h-4 w-4" /> {folder}
-                        <span className="text-xs font-normal">({items.length})</span>
+                      <h3 style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, color: BRAND.textMuted, marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>
+                        <Folder size={13} /> {folder} <span style={{ fontWeight: 400 }}>({items.length})</span>
                       </h3>
-                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 10 }}>
                         {items.map((l) => {
                           const niche = NICHES.find((n) => n.id === l.nicheId) ?? NICHES[0];
                           const done = l.items.filter((i) => i.checked).length;
+                          const pct = l.items.length ? (done / l.items.length) * 100 : 0;
                           return (
-                            <Card key={l.id} className="cursor-pointer p-4 transition-all hover:shadow-[var(--shadow-elegant)]" onClick={() => openExisting(l)}>
-                              <div className="flex items-start justify-between">
-                                <span className="text-2xl">{niche.emoji}</span>
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    deleteList(l.id);
-                                    toast("Lista removida");
-                                  }}
+                            <div
+                              key={l.id}
+                              onClick={() => openExisting(l)}
+                              style={{ background: BRAND.bgMid, border: `1px solid ${BRAND.bgLight}`, borderRadius: 14, padding: 14, cursor: "pointer" }}
+                            >
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                                <span style={{ fontSize: 24 }}>{niche.emoji}</span>
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); deleteList(l.id); toast("Lista removida"); }}
+                                  style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: BRAND.textMuted }}
                                 >
-                                  <Trash2 className="h-4 w-4 text-destructive" />
-                                </Button>
+                                  <Trash2 size={14} />
+                                </button>
                               </div>
-                              <h4 className="mt-1 font-semibold">{l.name}</h4>
-                              <p className="text-xs text-muted-foreground">{done}/{l.items.length} concluídos</p>
-                              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
-                                <div
-                                  className="h-full bg-[var(--gradient-hero)] transition-all"
-                                  style={{ width: `${l.items.length ? (done / l.items.length) * 100 : 0}%` }}
-                                />
+                              <div style={{ fontWeight: 700, fontSize: 14, marginTop: 6 }}>{l.name}</div>
+                              <div style={{ fontSize: 11, color: BRAND.textMuted, margin: "2px 0 8px" }}>{done}/{l.items.length} concluídos</div>
+                              <div style={{ height: 4, background: BRAND.bgLight, borderRadius: 99, overflow: "hidden" }}>
+                                <div style={{ height: "100%", width: `${pct}%`, background: accentGradient, borderRadius: 99 }} />
                               </div>
-                            </Card>
+                            </div>
                           );
                         })}
                       </div>
@@ -547,107 +550,107 @@ function Index() {
                 })}
               </div>
             )}
-          </TabsContent>
-        </Tabs>
+          </>
+        )}
       </main>
 
-      {/* List editor */}
+      {/* ── EDITOR DIALOG ── */}
       <Dialog open={!!editor} onOpenChange={(o) => !o && setEditor(null)}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg" style={{ background: BRAND.bgMid, border: `1px solid ${BRAND.bgLight}`, color: BRAND.text }}>
           {editor && (
             <>
               <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  <span className="text-2xl">{editorNiche.emoji}</span>
+                <DialogTitle style={{ display: "flex", alignItems: "center", gap: 8, color: BRAND.text }}>
+                  <span style={{ fontSize: 22 }}>{editorNiche.emoji}</span>
                   <Input
                     value={editor.name}
                     onChange={(e) => setEditor({ ...editor, name: e.target.value })}
-                    className="text-base font-semibold"
+                    style={{ background: BRAND.bg, border: `1px solid ${BRAND.bgLight}`, color: BRAND.text }}
                   />
                 </DialogTitle>
               </DialogHeader>
 
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">Pasta:</span>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 12, color: BRAND.textMuted }}>Pasta:</span>
                 <Select value={editor.folder} onValueChange={(v) => setEditor({ ...editor, folder: v })}>
-                  <SelectTrigger className="h-8 w-40"><SelectValue /></SelectTrigger>
-                  <SelectContent>
+                  <SelectTrigger style={{ background: BRAND.bg, border: `1px solid ${BRAND.bgLight}`, color: BRAND.text, height: 32, width: 140 }}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent style={{ background: BRAND.bgMid, border: `1px solid ${BRAND.bgLight}`, color: BRAND.text }}>
                     {folders.map((f) => <SelectItem key={f} value={f}>{f}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
 
-              <div className="flex flex-wrap gap-2">
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                 {editorNiche.actions.map((a) => (
-                  <Button
+                  <button
                     key={a.label}
-                    size="sm"
-                    variant="outline"
-                    className="rounded-full"
                     onClick={() => toast(`${a.emoji} ${a.label}`, { description: "Ação em breve" })}
+                    style={{ background: BRAND.bgLight, border: "none", borderRadius: 20, padding: "6px 12px", fontSize: 12, fontWeight: 600, color: BRAND.text, cursor: "pointer" }}
                   >
-                    <span className="mr-1">{a.emoji}</span>{a.label}
-                  </Button>
+                    {a.emoji} {a.label}
+                  </button>
                 ))}
               </div>
 
-              <div className="max-h-72 space-y-1.5 overflow-y-auto pr-1">
+              <div style={{ maxHeight: 260, overflowY: "auto", display: "flex", flexDirection: "column", gap: 6, scrollbarWidth: "none" }}>
                 {editor.items.map((item) => (
-                  <div key={item.id} className="group flex items-center gap-3 rounded-lg border bg-white px-3 py-2 transition-colors hover:border-primary/50">
+                  <div key={item.id} style={{ display: "flex", alignItems: "center", gap: 10, background: BRAND.bg, border: `1px solid ${BRAND.bgLight}`, borderRadius: 10, padding: "8px 12px" }}>
                     <Checkbox checked={item.checked} onCheckedChange={() => toggleItem(item.id)} />
-                    <span className={`flex-1 text-sm ${item.checked ? "text-muted-foreground line-through" : ""}`}>
+                    <span style={{ flex: 1, fontSize: 14, color: item.checked ? BRAND.textMuted : BRAND.text, textDecoration: item.checked ? "line-through" : "none" }}>
                       {item.name}
                     </span>
-                    <Button size="icon" variant="ghost" className="h-7 w-7 opacity-0 group-hover:opacity-100" onClick={() => removeItem(item.id)}>
-                      <X className="h-4 w-4" />
-                    </Button>
+                    <button onClick={() => removeItem(item.id)} style={{ background: "none", border: "none", cursor: "pointer", color: BRAND.textMuted, padding: 2 }}>
+                      <X size={14} />
+                    </button>
                   </div>
                 ))}
-                {editor.items.length === 0 && (
-                  <p className="py-6 text-center text-sm text-muted-foreground">Nenhum item — adicione abaixo</p>
-                )}
+                {editor.items.length === 0 && <p style={{ textAlign: "center", color: BRAND.textMuted, padding: "24px 0", fontSize: 13 }}>Nenhum item — adicione abaixo</p>}
               </div>
 
-              <div className="flex gap-2">
+              <div style={{ display: "flex", gap: 8 }}>
                 <Input
                   placeholder="Adicionar item…"
                   value={newItem}
                   onChange={(e) => setNewItem(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && addItem()}
+                  style={{ background: BRAND.bg, border: `1px solid ${BRAND.bgLight}`, color: BRAND.text }}
                 />
-                <Button onClick={addItem} variant="secondary"><Plus className="h-4 w-4" /></Button>
+                <Button onClick={addItem} variant="secondary"><Plus size={16} /></Button>
               </div>
 
               <DialogFooter>
-                <Button variant="outline" onClick={() => setEditor(null)}>Cancelar</Button>
-                <Button onClick={handleSave} className="gap-2"><Save className="h-4 w-4" /> Salvar</Button>
+                <Button variant="outline" onClick={() => setEditor(null)} style={{ borderColor: BRAND.bgLight, color: BRAND.textMuted }}>Cancelar</Button>
+                <Button onClick={handleSave} style={{ background: accentGradient, color: BRAND.bg, fontWeight: 700, border: "none" }}>
+                  <Save size={14} style={{ marginRight: 6 }} /> Salvar
+                </Button>
               </DialogFooter>
             </>
           )}
         </DialogContent>
       </Dialog>
 
-      {/* Feedback */}
+      {/* ── FEEDBACK DIALOG ── */}
       <Dialog open={feedbackOpen} onOpenChange={setFeedbackOpen}>
-        <DialogContent>
+        <DialogContent style={{ background: BRAND.bgMid, border: `1px solid ${BRAND.bgLight}`, color: BRAND.text }}>
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2"><Lightbulb className="h-5 w-5 text-amber-500" /> Sugestões de melhoria do App</DialogTitle>
+            <DialogTitle style={{ display: "flex", alignItems: "center", gap: 8, color: BRAND.text }}>
+              <Lightbulb size={18} color={BRAND.gold} /> Sugestões de melhoria
+            </DialogTitle>
           </DialogHeader>
           <Textarea
             placeholder="Conte o que podemos melhorar…"
             value={feedback}
             onChange={(e) => setFeedback(e.target.value)}
             rows={5}
+            style={{ background: BRAND.bg, border: `1px solid ${BRAND.bgLight}`, color: BRAND.text, resize: "none" }}
           />
           <DialogFooter>
-            <Button variant="outline" onClick={() => setFeedbackOpen(false)}>Fechar</Button>
+            <Button variant="outline" onClick={() => setFeedbackOpen(false)} style={{ borderColor: BRAND.bgLight, color: BRAND.textMuted }}>Fechar</Button>
             <Button
-              onClick={() => {
-                if (!feedback.trim()) return;
-                toast.success("Obrigado pela sugestão! 💚");
-                setFeedback("");
-                setFeedbackOpen(false);
-              }}
+              onClick={() => { if (!feedback.trim()) return; toast.success("Obrigado pela sugestão! 💚"); setFeedback(""); setFeedbackOpen(false); }}
+              style={{ background: accentGradient, color: BRAND.bg, fontWeight: 700, border: "none" }}
             >
               Enviar
             </Button>
