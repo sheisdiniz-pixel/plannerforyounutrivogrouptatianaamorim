@@ -17,11 +17,12 @@ import { Progress } from "@/components/ui/progress";
 import { toast, Toaster } from "sonner";
 import {
   Plus, Trash2, FolderPlus, ShoppingBag, Sparkles, Save, Lightbulb, Folder, X,
-  ListChecks, Flame, Trophy, Gift, Zap, CheckCircle2, Bell, Wallet,
+  ListChecks, Flame, Trophy, Gift, Zap, CheckCircle2, Bell, Wallet, Bot,
 } from "lucide-react";
 import profileLogo from "@/assets/profile-logo.png";
 import { useReminders } from "@/hooks/use-reminders";
 import BillsControl from "@/components/BillsControl";
+import ProjectWithAI from "@/components/ProjectWithAI";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -47,7 +48,7 @@ function Index() {
   const [feedback, setFeedback] = useState("");
   const [folderInput, setFolderInput] = useState("");
   const [tab, setTab] = useState("explorar");
-  const [exploreMode, setExploreMode] = useState<"compras" | "checklist" | "contas">("compras");
+  const [exploreMode, setExploreMode] = useState<"compras" | "checklist" | "contas" | "ia">("compras");
   const [activeRoutineId, setActiveRoutineId] = useState<string>(ROUTINES[0].id);
   const { reminders, setReminder } = useReminders((id) =>
     ROUTINES.flatMap((r) => r.tasks).find((t) => t.id === id)?.label ?? "Tarefa"
@@ -164,7 +165,7 @@ function Index() {
 
           {/* EXPLORAR */}
           <TabsContent value="explorar" className="mt-6">
-            {/* Section switcher: Compras | Checklist */}
+            {/* Section switcher: Compras | Checklist | Contas | IA */}
             <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
               <div className="flex items-center gap-2">
                 <button
@@ -197,17 +198,31 @@ function Index() {
                 >
                   <Wallet className="mr-1.5 inline h-4 w-4" /> Controle de Contas
                 </button>
+                <button
+                  onClick={() => setExploreMode("ia")}
+                  className={`rounded-full px-5 py-2 text-base font-bold transition-all ${
+                    exploreMode === "ia"
+                      ? "bg-gradient-to-r from-violet-500 to-indigo-600 text-slate-900 shadow-md"
+                      : "bg-white text-foreground hover:bg-muted"
+                  }`}
+                >
+                  <Bot className="mr-1.5 inline h-4 w-4" /> IA
+                </button>
               </div>
               <p className="text-sm text-muted-foreground">
                 {exploreMode === "compras"
                   ? "Escolha um estilo e crie sua lista em segundos"
                   : exploreMode === "checklist"
                   ? "Cumpra rotinas, ganhe XP e suba de rank 🏆"
-                  : "Gerencie suas contas, alarmes e vencimentos 💸"}
+                  : exploreMode === "contas"
+                  ? "Gerencie suas contas, alarmes e vencimentos 💸"
+                  : "Desenvolva projetos com inteligência artificial 🤖"}
               </p>
             </div>
 
-            {exploreMode === "contas" ? (
+            {exploreMode === "ia" ? (
+              <ProjectWithAI />
+            ) : exploreMode === "contas" ? (
               <BillsControl />
             ) : exploreMode === "compras" ? (
               <section>
