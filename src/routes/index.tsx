@@ -17,11 +17,12 @@ import { Progress } from "@/components/ui/progress";
 import { toast, Toaster } from "sonner";
 import {
   Plus, Trash2, FolderPlus, ShoppingBag, Sparkles, Save, Lightbulb, Folder, X,
-  ListChecks, Flame, Trophy, Gift, Zap, CheckCircle2, Bell, Wallet,
+  ListChecks, Flame, Trophy, Gift, Zap, CheckCircle2, Bell, Wallet, Bot,
 } from "lucide-react";
 import profileLogo from "@/assets/profile-logo.png";
 import { useReminders } from "@/hooks/use-reminders";
 import BillsControl from "@/components/BillsControl";
+import ProjectWithAI from "@/components/ProjectWithAI";
 
 export const Route = createFileRoute("/")({
   head: () => ({
