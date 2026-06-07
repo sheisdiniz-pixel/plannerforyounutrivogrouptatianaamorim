@@ -1,6 +1,74 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Bot } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { ExternalLink, Bot, TrendingUp, CloudSun } from "lucide-react";
+
+interface TrendTag {
+  label: string;
+  description: string;
+  query: string;
+}
+
+const TRENDING_AI_TAGS: TrendTag[] = [
+  {
+    label: "IA Generativa",
+    description: "Criação automática de textos, imagens e vídeos com modelos como GPT-5 e Gemini.",
+    query: "IA generativa tendências 2026",
+  },
+  {
+    label: "Agentes Autônomos",
+    description: "Agentes de IA que executam tarefas complexas sem supervisão humana.",
+    query: "AI agents autonomous workflows",
+  },
+  {
+    label: "LLMs Multimodais",
+    description: "Modelos que entendem texto, áudio, imagem e vídeo ao mesmo tempo.",
+    query: "multimodal LLM 2026",
+  },
+  {
+    label: "RAG e Vector DBs",
+    description: "Retrieval-Augmented Generation para respostas precisas com dados próprios.",
+    query: "RAG retrieval augmented generation",
+  },
+  {
+    label: "Edge AI",
+    description: "IA rodando direto no dispositivo, sem nuvem — mais rápido e privado.",
+    query: "edge AI on-device inference",
+  },
+  {
+    label: "Prompt Engineering",
+    description: "Técnicas avançadas para extrair o máximo dos modelos de linguagem.",
+    query: "prompt engineering avançado",
+  },
+  {
+    label: "Fine-tuning & LoRA",
+    description: "Personalize modelos de IA para o seu nicho com pouco dado e baixo custo.",
+    query: "LoRA fine-tuning LLM",
+  },
+  {
+    label: "AI Safety & Alignment",
+    description: "Tendência crescente em segurança, ética e alinhamento de modelos.",
+    query: "AI safety alignment 2026",
+  },
+];
+
+const CLIMATE_TAGS: TrendTag[] = [
+  {
+    label: "Mudanças Climáticas",
+    description: "Como eventos extremos afetam rotinas, saúde e planejamento diário.",
+    query: "mudanças climáticas impacto cotidiano",
+  },
+  {
+    label: "Eficiência Energética",
+    description: "Tecnologias e hábitos para reduzir consumo em casa e no trabalho.",
+    query: "eficiência energética tecnologia 2026",
+  },
+  {
+    label: "Previsões e Clima Extremo",
+    description: "IA aplicada à previsão de ondas de calor, chuvas intensas e secas.",
+    query: "previsão clima extremo IA",
+  },
+];
 
 interface ProjectCard {
   emoji: string;
