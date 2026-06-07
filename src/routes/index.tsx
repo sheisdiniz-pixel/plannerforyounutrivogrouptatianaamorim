@@ -165,7 +165,7 @@ function Index() {
 
           {/* EXPLORAR */}
           <TabsContent value="explorar" className="mt-6">
-            {/* Section switcher: Compras | Checklist */}
+            {/* Section switcher: Compras | Checklist | Contas | IA */}
             <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
               <div className="flex items-center gap-2">
                 <button
@@ -198,17 +198,31 @@ function Index() {
                 >
                   <Wallet className="mr-1.5 inline h-4 w-4" /> Controle de Contas
                 </button>
+                <button
+                  onClick={() => setExploreMode("ia")}
+                  className={`rounded-full px-5 py-2 text-base font-bold transition-all ${
+                    exploreMode === "ia"
+                      ? "bg-gradient-to-r from-violet-500 to-indigo-600 text-slate-900 shadow-md"
+                      : "bg-white text-foreground hover:bg-muted"
+                  }`}
+                >
+                  <Bot className="mr-1.5 inline h-4 w-4" /> IA
+                </button>
               </div>
               <p className="text-sm text-muted-foreground">
                 {exploreMode === "compras"
                   ? "Escolha um estilo e crie sua lista em segundos"
                   : exploreMode === "checklist"
                   ? "Cumpra rotinas, ganhe XP e suba de rank 🏆"
-                  : "Gerencie suas contas, alarmes e vencimentos 💸"}
+                  : exploreMode === "contas"
+                  ? "Gerencie suas contas, alarmes e vencimentos 💸"
+                  : "Desenvolva projetos com inteligência artificial 🤖"}
               </p>
             </div>
 
-            {exploreMode === "contas" ? (
+            {exploreMode === "ia" ? (
+              <ProjectWithAI />
+            ) : exploreMode === "contas" ? (
               <BillsControl />
             ) : exploreMode === "compras" ? (
               <section>
