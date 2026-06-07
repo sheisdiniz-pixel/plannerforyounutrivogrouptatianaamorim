@@ -14,35 +14,35 @@ const PROJECTS: ProjectCard[] = [
   {
     emoji: "📅",
     name: "Calendário Editorial",
-    description: "Seu roteiro semanal de conteúdo com posts prontos para cada dia",
+    description: "Nunca mais fique sem ideia do que postar. Tenha um roteiro pronto para cada dia da semana.",
     link: "#",
-    linkLabel: "Acessar",
+    linkLabel: "Usar Agora",
   },
   {
     emoji: "🛍️",
     name: "IA INFLUENCER",
-    description: "Estrutura completa do produto Shopee e TikTok",
+    description: "Descubra como monetizar seu perfil com estratégias prontas para Shopee e TikTok.",
     link: "#",
-    linkLabel: "Acessar",
+    linkLabel: "Começar a Vender",
   },
   {
     emoji: "🏢",
     name: "NutrivoGroup",
-    description: "Mapa interno da sua startup de conexões digitais",
+    description: "Organize suas conexões digitais e transforme sua presença online em resultados reais.",
     link: "#",
-    linkLabel: "Acessar",
+    linkLabel: "Acessar Mapa",
   },
   {
     emoji: "🤖",
     name: "AchadinhosComIA",
-    description: "Estrutura completa do perfil pioneiro no Instagram",
+    description: "Veja a estrutura completa de um perfil que já usa IA para crescer no Instagram.",
     link: "#",
-    linkLabel: "Acessar",
+    linkLabel: "Ver Modelo",
   },
   {
     emoji: "✨",
     name: "Criar com Claude",
-    description: "Abrir o Claude para criar novos projetos e documentos",
+    description: "Abra o Claude agora mesmo e comece a criar conteúdo, projetos e documentos em segundos.",
     link: "https://claude.ai",
     linkLabel: "Abrir Claude",
   },
@@ -58,9 +58,9 @@ export default function ProjectWithAI() {
             <Bot className="h-7 w-7 text-white" />
           </div>
           <div>
-            <h2 className="text-xl font-extrabold tracking-tight">Desenvolva seu Projeto com o Claude</h2>
+            <h2 className="text-xl font-extrabold tracking-tight">Crie Seus Projetos com IA e Ganhe Tempo</h2>
             <p className="mt-1 text-sm text-purple-100">
-              Acesse seus documentos estratégicos e ferramentas de IA em um só lugar
+              Tudo o que você precisa para produzir mais, vender melhor e crescer online — em um só lugar.
             </p>
           </div>
         </div>
