@@ -163,6 +163,99 @@ export default function ProjectWithAI() {
           </Card>
         ))}
       </div>
+
+      {/* Assuntos em Alta — Tecnologia & IA */}
+      <Card className="border-border/60 p-6">
+        <div className="flex items-start gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-fuchsia-500 to-violet-600 text-white">
+            <TrendingUp className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-foreground">Assuntos em Alta — Tecnologia & IA</h3>
+            <p className="text-sm text-muted-foreground">
+              Termos com alto volume de busca e tendências em ascensão. Clique para explorar no Google Trends.
+            </p>
+          </div>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {TRENDING_AI_TAGS.map((tag) => (
+            <button
+              key={tag.label}
+              type="button"
+              title={tag.description}
+              onClick={() =>
+                window.open(
+                  `https://trends.google.com/trends/explore?q=${encodeURIComponent(tag.query)}`,
+                  "_blank",
+                  "noopener,noreferrer",
+                )
+              }
+              className="group"
+            >
+              <Badge
+                variant="secondary"
+                className="cursor-pointer rounded-full border border-border/60 bg-gradient-to-r from-violet-500/10 to-fuchsia-500/10 px-3 py-1.5 text-xs font-medium text-foreground transition-all hover:-translate-y-0.5 hover:from-violet-500/20 hover:to-fuchsia-500/20"
+              >
+                #{tag.label}
+              </Badge>
+            </button>
+          ))}
+        </div>
+        <div className="mt-4 grid gap-2 sm:grid-cols-2">
+          {TRENDING_AI_TAGS.map((tag) => (
+            <div key={`desc-${tag.label}`} className="rounded-lg border border-border/40 bg-muted/20 p-3">
+              <p className="text-xs font-semibold text-foreground">#{tag.label}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">{tag.description}</p>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* Clima & Temperatura */}
+      <Card className="border-border/60 p-6">
+        <div className="flex items-start gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-emerald-500 text-white">
+            <CloudSun className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-foreground">Clima & Temperatura</h3>
+            <p className="text-sm text-muted-foreground">
+              Impacto do clima extremo no cotidiano e na tecnologia — tendências globais.
+            </p>
+          </div>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {CLIMATE_TAGS.map((tag) => (
+            <button
+              key={tag.label}
+              type="button"
+              title={tag.description}
+              onClick={() =>
+                window.open(
+                  `https://trends.google.com/trends/explore?q=${encodeURIComponent(tag.query)}`,
+                  "_blank",
+                  "noopener,noreferrer",
+                )
+              }
+            >
+              <Badge
+                variant="secondary"
+                className="cursor-pointer rounded-full border border-border/60 bg-gradient-to-r from-sky-500/10 to-emerald-500/10 px-3 py-1.5 text-xs font-medium text-foreground transition-all hover:-translate-y-0.5 hover:from-sky-500/20 hover:to-emerald-500/20"
+              >
+                #{tag.label}
+              </Badge>
+            </button>
+          ))}
+        </div>
+        <div className="mt-4 grid gap-2 sm:grid-cols-3">
+          {CLIMATE_TAGS.map((tag) => (
+            <div key={`clima-${tag.label}`} className="rounded-lg border border-border/40 bg-muted/20 p-3">
+              <p className="text-xs font-semibold text-foreground">#{tag.label}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">{tag.description}</p>
+            </div>
+          ))}
+        </div>
+      </Card>
     </section>
   );
 }
