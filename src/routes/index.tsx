@@ -68,7 +68,7 @@ function Index() {
   const [feedback, setFeedback] = useState("");
   const [folderInput, setFolderInput] = useState("");
   const [tab, setTab] = useState("explorar");
-  const [exploreMode, setExploreMode] = useState<"compras" | "checklist" | "contas" | "ia">("compras");
+  const [exploreMode, setExploreMode] = useState<"checklist" | "contas" | "gamer" | "ia">("checklist");
   const [activeRoutineId, setActiveRoutineId] = useState<string>(ROUTINES[0].id);
   const { reminders, setReminder } = useReminders((id) =>
     ROUTINES.flatMap((r) => r.tasks).find((t) => t.id === id)?.label ?? "Tarefa"
