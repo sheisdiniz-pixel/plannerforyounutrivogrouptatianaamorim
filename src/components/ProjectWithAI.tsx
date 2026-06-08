@@ -179,36 +179,16 @@ export default function ProjectWithAI() {
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
           {TRENDING_AI_TAGS.map((tag) => (
-            <button
+            <Badge
               key={tag.label}
-              type="button"
-              title={tag.description}
-              onClick={() =>
-                window.open(
-                  `https://trends.google.com/trends/explore?q=${encodeURIComponent(tag.query)}`,
-                  "_blank",
-                  "noopener,noreferrer",
-                )
-              }
-              className="group"
+              variant="secondary"
+              className="rounded-full border border-border/60 bg-gradient-to-r from-violet-500/10 to-fuchsia-500/10 px-3 py-1.5 text-xs font-medium text-foreground"
             >
-              <Badge
-                variant="secondary"
-                className="cursor-pointer rounded-full border border-border/60 bg-gradient-to-r from-violet-500/10 to-fuchsia-500/10 px-3 py-1.5 text-xs font-medium text-foreground transition-all hover:-translate-y-0.5 hover:from-violet-500/20 hover:to-fuchsia-500/20"
-              >
-                #{tag.label}
-              </Badge>
-            </button>
+              {tag.label}
+            </Badge>
           ))}
         </div>
-        <div className="mt-4 grid gap-2 sm:grid-cols-2">
-          {TRENDING_AI_TAGS.map((tag) => (
-            <div key={`desc-${tag.label}`} className="rounded-lg border border-border/40 bg-muted/20 p-3">
-              <p className="text-xs font-semibold text-foreground">#{tag.label}</p>
-              <p className="mt-0.5 text-xs text-muted-foreground">{tag.description}</p>
-            </div>
-          ))}
-        </div>
+        <p className="mt-4 text-xs text-muted-foreground italic">Acesso em breve</p>
       </Card>
 
       {/* Clima & Temperatura */}
@@ -226,35 +206,16 @@ export default function ProjectWithAI() {
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
           {CLIMATE_TAGS.map((tag) => (
-            <button
+            <Badge
               key={tag.label}
-              type="button"
-              title={tag.description}
-              onClick={() =>
-                window.open(
-                  `https://trends.google.com/trends/explore?q=${encodeURIComponent(tag.query)}`,
-                  "_blank",
-                  "noopener,noreferrer",
-                )
-              }
+              variant="secondary"
+              className="rounded-full border border-border/60 bg-gradient-to-r from-sky-500/10 to-emerald-500/10 px-3 py-1.5 text-xs font-medium text-foreground"
             >
-              <Badge
-                variant="secondary"
-                className="cursor-pointer rounded-full border border-border/60 bg-gradient-to-r from-sky-500/10 to-emerald-500/10 px-3 py-1.5 text-xs font-medium text-foreground transition-all hover:-translate-y-0.5 hover:from-sky-500/20 hover:to-emerald-500/20"
-              >
-                #{tag.label}
-              </Badge>
-            </button>
+              {tag.label}
+            </Badge>
           ))}
         </div>
-        <div className="mt-4 grid gap-2 sm:grid-cols-3">
-          {CLIMATE_TAGS.map((tag) => (
-            <div key={`clima-${tag.label}`} className="rounded-lg border border-border/40 bg-muted/20 p-3">
-              <p className="text-xs font-semibold text-foreground">#{tag.label}</p>
-              <p className="mt-0.5 text-xs text-muted-foreground">{tag.description}</p>
-            </div>
-          ))}
-        </div>
+        <p className="mt-4 text-xs text-muted-foreground italic">Acesso em breve</p>
       </Card>
     </section>
   );
