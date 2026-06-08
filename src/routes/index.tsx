@@ -208,9 +208,9 @@ function Index() {
             {/* Mode switcher */}
             <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4, marginBottom: 16, scrollbarWidth: "none" }}>
               {[
-                { mode: "compras", label: "Compras", icon: <ShoppingBag size={14} />, color: BRAND.accent },
                 { mode: "checklist", label: "Checklist", icon: <ListChecks size={14} />, color: "#f59e0b" },
-                { mode: "contas", label: "Contas", icon: <Wallet size={14} />, color: "#10b981" },
+                { mode: "contas", label: "Controle de Contas", icon: <Wallet size={14} />, color: "#10b981" },
+                { mode: "gamer", label: "🎮 Órbita Gamer", icon: <Gamepad2 size={14} />, color: "#39ff14" },
                 { mode: "ia", label: "IA", icon: <Bot size={14} />, color: "#a78bfa" },
               ].map((m) => (
                 <button
@@ -233,9 +233,9 @@ function Index() {
 
             {/* Subtitle */}
             <p style={{ fontSize: 13, color: BRAND.textMuted, marginBottom: 16, marginTop: 0 }}>
-              {exploreMode === "compras" && "Escolha um estilo e crie sua lista em segundos"}
               {exploreMode === "checklist" && "Cumpra rotinas, ganhe XP e suba de rank 🏆"}
               {exploreMode === "contas" && "Gerencie suas contas, alarmes e vencimentos 💸"}
+              {exploreMode === "gamer" && "Seu mundo gamer Xbox & Mobile em tempo real 🎮"}
               {exploreMode === "ia" && "Desenvolva projetos com inteligência artificial 🤖"}
             </p>
 
@@ -245,69 +245,9 @@ function Index() {
             {/* ── CONTAS ── */}
             {exploreMode === "contas" && <BillsControl />}
 
-            {/* ── COMPRAS ── */}
-            {exploreMode === "compras" && (
-              <section>
-                {/* Niche pills */}
-                <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8, marginBottom: 16, scrollbarWidth: "none" }}>
-                  {NICHES.map((n) => {
-                    const active = activeNiche.id === n.id;
-                    return (
-                      <button
-                        key={n.id}
-                        onClick={() => setActiveNiche(n)}
-                        style={{
-                          flexShrink: 0, borderRadius: 20, padding: "7px 14px", fontSize: 13, fontWeight: 600,
-                          cursor: "pointer", transition: "all 0.15s",
-                          border: active ? "none" : `1.5px solid ${BRAND.bgLight}`,
-                          background: active ? accentGradient : BRAND.bgMid,
-                          color: active ? BRAND.bg : BRAND.textMuted,
-                        }}
-                      >
-                        <span style={{ marginRight: 4 }}>{n.emoji}</span>{n.name}
-                      </button>
-                    );
-                  })}
-                </div>
+            {/* ── GAMER ── */}
+            {exploreMode === "gamer" && <GamerOrbit />}
 
-                {/* Cards grid */}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
-                  {NICHES.map((n) => {
-                    const Icon = n.icon;
-                    return (
-                      <div
-                        key={n.id}
-                        onClick={() => startNewList(n)}
-                        style={{
-                          background: BRAND.bgMid, borderRadius: 16, overflow: "hidden",
-                          border: `1px solid ${BRAND.bgLight}`, cursor: "pointer",
-                          transition: "transform 0.15s, box-shadow 0.15s",
-                        }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = "translateY(-2px)"; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 8px 24px rgba(0,0,0,0.4)`; }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = ""; (e.currentTarget as HTMLDivElement).style.boxShadow = ""; }}
-                      >
-                        <div style={{ padding: "14px 14px 10px", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                          <div style={{ background: BRAND.bgLight, borderRadius: 10, padding: 8 }}>
-                            <Icon size={16} color={BRAND.accent} />
-                          </div>
-                          <span style={{ fontSize: 24 }}>{n.emoji}</span>
-                        </div>
-                        <div style={{ padding: "0 14px 14px" }}>
-                          <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 2, color: BRAND.text }}>{n.name}</div>
-                          <div style={{ fontSize: 11, color: BRAND.textMuted, marginBottom: 10 }}>{n.description}</div>
-                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                            <span style={{ fontSize: 11, color: BRAND.textMuted }}>{n.defaultItems.length} itens</span>
-                            <span style={{ background: accentGradient, color: BRAND.bg, borderRadius: 8, padding: "4px 10px", fontSize: 12, fontWeight: 700 }}>
-                              + Criar
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
-            )}
 
             {/* ── CHECKLIST ── */}
             {exploreMode === "checklist" && (
