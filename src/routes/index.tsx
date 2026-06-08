@@ -495,6 +495,9 @@ function Index() {
             )}
           </>
         )}
+
+        {/* ════════════ PRODUTOS ════════════ */}
+        {tab === "produtos" && <ProductsSales />}
       </main>
 
       {/* ── EDITOR DIALOG ── */}
