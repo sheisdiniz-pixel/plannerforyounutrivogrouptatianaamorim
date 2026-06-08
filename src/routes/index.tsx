@@ -176,6 +176,7 @@ function Index() {
           {[
             { value: "explorar", label: "Explorar", icon: <Sparkles size={14} /> },
             { value: "minhas", label: "Minhas listas", icon: <Folder size={14} />, badge: lists.length > 0 ? lists.length : null },
+            { value: "produtos", label: "Produtos", icon: <ShoppingBag size={14} /> },
           ].map((t) => (
             <button
               key={t.value}
