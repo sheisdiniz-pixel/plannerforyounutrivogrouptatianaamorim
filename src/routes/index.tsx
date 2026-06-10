@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { NICHES, type ListNiche } from "@/lib/lists-data";
 import { ROUTINES, RANKS, REWARDS, rankFromXp } from "@/lib/routines-data";
 import { useLists, type SavedList } from "@/hooks/use-lists";
@@ -18,6 +18,7 @@ import { toast, Toaster } from "sonner";
 import {
   Plus, Trash2, FolderPlus, Sparkles, Save, Lightbulb, Folder, X,
   ListChecks, Flame, Trophy, Gift, Zap, CheckCircle2, Bell, Wallet, Bot, Gamepad2, ShoppingBag,
+  Search, GraduationCap,
 } from "lucide-react";
 import profileLogo from "@/assets/profile-logo.png";
 import { useReminders } from "@/hooks/use-reminders";
@@ -25,6 +26,10 @@ import BillsControl from "@/components/BillsControl";
 import ProjectWithAI from "@/components/ProjectWithAI";
 import GamerOrbit from "@/components/GamerOrbit";
 import ProductsSales from "@/components/ProductsSales";
+import LearnSection from "@/components/LearnSection";
+import VoiceAssistant from "@/components/VoiceAssistant";
+import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -68,11 +73,34 @@ function Index() {
   const [feedback, setFeedback] = useState("");
   const [folderInput, setFolderInput] = useState("");
   const [tab, setTab] = useState("explorar");
-  const [exploreMode, setExploreMode] = useState<"checklist" | "contas" | "gamer" | "ia">("checklist");
+  const [exploreMode, setExploreMode] = useState<"checklist" | "contas" | "gamer" | "ia">("ia");
   const [activeRoutineId, setActiveRoutineId] = useState<string>(ROUTINES[0].id);
+  const [searchQuery, setSearchQuery] = useState("");
   const { reminders, setReminder } = useReminders((id) =>
     ROUTINES.flatMap((r) => r.tasks).find((t) => t.id === id)?.label ?? "Tarefa"
   );
+
+  // Comandos do assistente de voz
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const cmd = (e as CustomEvent).detail as
+        | { type: "tab"; tab: string }
+        | { type: "exploreMode"; mode: "checklist" | "contas" | "gamer" | "ia" }
+        | { type: "newList"; nicheKeyword?: string };
+      if (cmd.type === "tab") setTab(cmd.tab);
+      else if (cmd.type === "exploreMode") { setTab("explorar"); setExploreMode(cmd.mode); }
+      else if (cmd.type === "newList") {
+        const kw = (cmd.nicheKeyword || "").toLowerCase().trim();
+        const niche = kw
+          ? NICHES.find((n) => n.name.toLowerCase().includes(kw) || n.id.includes(kw)) ?? NICHES[0]
+          : NICHES[0];
+        startNewList(niche);
+      }
+    };
+    window.addEventListener("planner-command", handler);
+    return () => window.removeEventListener("planner-command", handler);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [folders]);
 
   const startNewList = (niche: ListNiche) => {
     const list: SavedList = {
@@ -171,20 +199,50 @@ function Index() {
           </button>
         </div>
 
-        {/* ── TABS: Explorar / Minhas listas ── */}
-        <div style={{ maxWidth: 720, margin: "0 auto", padding: "0 16px 12px", display: "flex", gap: 8 }}>
+        {/* ── Barra de busca ── */}
+        <div style={{ maxWidth: 720, margin: "0 auto", padding: "0 16px 10px" }}>
+          <div style={{
+            display: "flex", alignItems: "center", gap: 8,
+            background: BRAND.bgMid, border: `1.5px solid ${BRAND.bgLight}`,
+            borderRadius: 10, padding: "8px 12px",
+          }}>
+            <Search size={16} color={BRAND.textMuted} />
+            <input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Buscar listas, categorias, conteúdos…"
+              style={{
+                flex: 1, background: "transparent", border: "none", outline: "none",
+                color: BRAND.text, fontSize: 14,
+              }}
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                aria-label="Limpar busca"
+                style={{ background: "none", border: "none", cursor: "pointer", color: BRAND.textMuted, padding: 2, display: "flex" }}
+              >
+                <X size={16} />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* ── TABS ── */}
+        <div style={{ maxWidth: 720, margin: "0 auto", padding: "0 16px 12px", display: "flex", gap: 8, overflowX: "auto", scrollbarWidth: "none" }}>
           {[
             { value: "explorar", label: "Explorar", icon: <Sparkles size={14} /> },
             { value: "minhas", label: "Minhas listas", icon: <Folder size={14} />, badge: lists.length > 0 ? lists.length : null },
+            { value: "aprenda", label: "Aprenda", icon: <GraduationCap size={14} /> },
             { value: "produtos", label: "Produtos", icon: <ShoppingBag size={14} /> },
           ].map((t) => (
             <button
               key={t.value}
               onClick={() => setTab(t.value)}
               style={{
-                flex: 1, padding: "9px 0", borderRadius: 10, border: "none", cursor: "pointer",
+                flex: "1 0 auto", padding: "9px 12px", borderRadius: 10, border: "none", cursor: "pointer",
                 fontWeight: 700, fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                transition: "all 0.2s",
+                transition: "all 0.2s", whiteSpace: "nowrap",
                 background: tab === t.value ? BRAND.accent : BRAND.bgLight,
                 color: tab === t.value ? BRAND.bg : BRAND.textMuted,
               }}
@@ -202,16 +260,71 @@ function Index() {
 
       <main style={{ maxWidth: 720, margin: "0 auto", padding: "16px 16px 32px" }}>
 
+        {/* ════════════ RESULTADOS DA BUSCA ════════════ */}
+        {searchQuery.trim() && (() => {
+          const q = searchQuery.toLowerCase().trim();
+          const matchedNiches = NICHES.filter((n) =>
+            n.name.toLowerCase().includes(q) ||
+            n.defaultItems.some((i) => i.toLowerCase().includes(q))
+          );
+          const matchedLists = lists.filter((l) =>
+            l.name.toLowerCase().includes(q) ||
+            l.folder.toLowerCase().includes(q) ||
+            l.items.some((i) => i.name.toLowerCase().includes(q))
+          );
+          const empty = matchedNiches.length === 0 && matchedLists.length === 0;
+          return (
+            <div style={{ marginBottom: 16 }}>
+              <h3 style={{ fontSize: 14, fontWeight: 700, color: BRAND.text, margin: "0 0 10px" }}>
+                Resultados para "{searchQuery}"
+              </h3>
+              {empty && (
+                <div style={{ background: BRAND.bgMid, border: `1px solid ${BRAND.bgLight}`, borderRadius: 12, padding: 24, textAlign: "center", color: BRAND.textMuted, fontSize: 14 }}>
+                  Nenhum resultado encontrado 😕
+                </div>
+              )}
+              {matchedNiches.length > 0 && (
+                <>
+                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, color: BRAND.textMuted, margin: "12px 0 6px" }}>Categorias</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: 8 }}>
+                    {matchedNiches.map((n) => (
+                      <button key={n.id} onClick={() => { startNewList(n); setSearchQuery(""); }}
+                        style={{ background: BRAND.bgMid, border: `1px solid ${BRAND.bgLight}`, borderRadius: 12, padding: 12, cursor: "pointer", color: BRAND.text, textAlign: "left" }}>
+                        <div style={{ fontSize: 22 }}>{n.emoji}</div>
+                        <div style={{ fontWeight: 700, fontSize: 13, marginTop: 4 }}>{n.name}</div>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+              {matchedLists.length > 0 && (
+                <>
+                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, color: BRAND.textMuted, margin: "16px 0 6px" }}>Minhas listas</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 8 }}>
+                    {matchedLists.map((l) => (
+                      <button key={l.id} onClick={() => { openExisting(l); setSearchQuery(""); }}
+                        style={{ background: BRAND.bgMid, border: `1px solid ${BRAND.bgLight}`, borderRadius: 12, padding: 12, cursor: "pointer", color: BRAND.text, textAlign: "left" }}>
+                        <div style={{ fontWeight: 700, fontSize: 13 }}>{l.name}</div>
+                        <div style={{ fontSize: 11, color: BRAND.textMuted, marginTop: 2 }}>{l.folder} · {l.items.length} itens</div>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          );
+        })()}
+
         {/* ════════════ EXPLORAR ════════════ */}
         {tab === "explorar" && (
           <>
             {/* Mode switcher */}
             <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4, marginBottom: 16, scrollbarWidth: "none" }}>
               {[
-                { mode: "checklist", label: "Checklist", icon: <ListChecks size={14} />, color: "#f59e0b" },
+                { mode: "ia", label: "IA", icon: <Bot size={14} />, color: "#a78bfa" },
                 { mode: "contas", label: "Controle de Contas", icon: <Wallet size={14} />, color: "#10b981" },
                 { mode: "gamer", label: "🎮 Órbita Gamer", icon: <Gamepad2 size={14} />, color: "#39ff14" },
-                { mode: "ia", label: "IA", icon: <Bot size={14} />, color: "#a78bfa" },
+                { mode: "checklist", label: "Checklist", icon: <ListChecks size={14} />, color: "#f59e0b" },
               ].map((m) => (
                 <button
                   key={m.mode}
@@ -496,9 +609,17 @@ function Index() {
           </>
         )}
 
+        {/* ════════════ APRENDA ════════════ */}
+        {tab === "aprenda" && <LearnSection />}
+
         {/* ════════════ PRODUTOS ════════════ */}
         {tab === "produtos" && <ProductsSales />}
       </main>
+
+      {/* ── Assistente de voz flutuante ── */}
+      <VoiceAssistant />
+      {/* ── PWA auto-update ── */}
+      <ServiceWorkerRegister />
 
       {/* ── EDITOR DIALOG ── */}
       <Dialog open={!!editor} onOpenChange={(o) => !o && setEditor(null)}>
@@ -595,7 +716,15 @@ function Index() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setFeedbackOpen(false)} style={{ borderColor: BRAND.bgLight, color: BRAND.textMuted }}>Fechar</Button>
             <Button
-              onClick={() => { if (!feedback.trim()) return; toast.success("Obrigado pela sugestão! 💚"); setFeedback(""); setFeedbackOpen(false); }}
+              onClick={() => {
+                if (!feedback.trim()) return;
+                const msg = `💡 Sugestão/Crítica do Planner For You: ${feedback.trim()}`;
+                const url = `https://wa.me/5521995965980?text=${encodeURIComponent(msg)}`;
+                window.open(url, "_blank", "noopener,noreferrer");
+                toast.success("Obrigada pelo seu feedback! 💜");
+                setFeedback("");
+                setFeedbackOpen(false);
+              }}
               style={{ background: accentGradient, color: BRAND.bg, fontWeight: 700, border: "none" }}
             >
               Enviar
