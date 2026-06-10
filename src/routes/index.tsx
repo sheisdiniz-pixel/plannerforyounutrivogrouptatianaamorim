@@ -29,7 +29,7 @@ import ProductsSales from "@/components/ProductsSales";
 import LearnSection from "@/components/LearnSection";
 import VoiceAssistant from "@/components/VoiceAssistant";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
-import { useEffect } from "react";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
