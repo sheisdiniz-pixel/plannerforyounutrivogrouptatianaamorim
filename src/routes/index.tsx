@@ -321,10 +321,10 @@ function Index() {
             {/* Mode switcher */}
             <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4, marginBottom: 16, scrollbarWidth: "none" }}>
               {[
-                { mode: "checklist", label: "Checklist", icon: <ListChecks size={14} />, color: "#f59e0b" },
+                { mode: "ia", label: "IA", icon: <Bot size={14} />, color: "#a78bfa" },
                 { mode: "contas", label: "Controle de Contas", icon: <Wallet size={14} />, color: "#10b981" },
                 { mode: "gamer", label: "🎮 Órbita Gamer", icon: <Gamepad2 size={14} />, color: "#39ff14" },
-                { mode: "ia", label: "IA", icon: <Bot size={14} />, color: "#a78bfa" },
+                { mode: "checklist", label: "Checklist", icon: <ListChecks size={14} />, color: "#f59e0b" },
               ].map((m) => (
                 <button
                   key={m.mode}
