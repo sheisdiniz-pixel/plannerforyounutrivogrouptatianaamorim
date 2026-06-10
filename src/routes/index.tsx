@@ -73,11 +73,34 @@ function Index() {
   const [feedback, setFeedback] = useState("");
   const [folderInput, setFolderInput] = useState("");
   const [tab, setTab] = useState("explorar");
-  const [exploreMode, setExploreMode] = useState<"checklist" | "contas" | "gamer" | "ia">("checklist");
+  const [exploreMode, setExploreMode] = useState<"checklist" | "contas" | "gamer" | "ia">("ia");
   const [activeRoutineId, setActiveRoutineId] = useState<string>(ROUTINES[0].id);
+  const [searchQuery, setSearchQuery] = useState("");
   const { reminders, setReminder } = useReminders((id) =>
     ROUTINES.flatMap((r) => r.tasks).find((t) => t.id === id)?.label ?? "Tarefa"
   );
+
+  // Comandos do assistente de voz
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const cmd = (e as CustomEvent).detail as
+        | { type: "tab"; tab: string }
+        | { type: "exploreMode"; mode: "checklist" | "contas" | "gamer" | "ia" }
+        | { type: "newList"; nicheKeyword?: string };
+      if (cmd.type === "tab") setTab(cmd.tab);
+      else if (cmd.type === "exploreMode") { setTab("explorar"); setExploreMode(cmd.mode); }
+      else if (cmd.type === "newList") {
+        const kw = (cmd.nicheKeyword || "").toLowerCase().trim();
+        const niche = kw
+          ? NICHES.find((n) => n.name.toLowerCase().includes(kw) || n.id.includes(kw)) ?? NICHES[0]
+          : NICHES[0];
+        startNewList(niche);
+      }
+    };
+    window.addEventListener("planner-command", handler);
+    return () => window.removeEventListener("planner-command", handler);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [folders]);
 
   const startNewList = (niche: ListNiche) => {
     const list: SavedList = {
