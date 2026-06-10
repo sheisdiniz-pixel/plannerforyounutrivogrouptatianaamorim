@@ -609,9 +609,17 @@ function Index() {
           </>
         )}
 
+        {/* ════════════ APRENDA ════════════ */}
+        {tab === "aprenda" && <LearnSection />}
+
         {/* ════════════ PRODUTOS ════════════ */}
         {tab === "produtos" && <ProductsSales />}
       </main>
+
+      {/* ── Assistente de voz flutuante ── */}
+      <VoiceAssistant />
+      {/* ── PWA auto-update ── */}
+      <ServiceWorkerRegister />
 
       {/* ── EDITOR DIALOG ── */}
       <Dialog open={!!editor} onOpenChange={(o) => !o && setEditor(null)}>
