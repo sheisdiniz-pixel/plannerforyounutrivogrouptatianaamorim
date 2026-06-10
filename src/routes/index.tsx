@@ -199,20 +199,50 @@ function Index() {
           </button>
         </div>
 
-        {/* ── TABS: Explorar / Minhas listas ── */}
-        <div style={{ maxWidth: 720, margin: "0 auto", padding: "0 16px 12px", display: "flex", gap: 8 }}>
+        {/* ── Barra de busca ── */}
+        <div style={{ maxWidth: 720, margin: "0 auto", padding: "0 16px 10px" }}>
+          <div style={{
+            display: "flex", alignItems: "center", gap: 8,
+            background: BRAND.bgMid, border: `1.5px solid ${BRAND.bgLight}`,
+            borderRadius: 10, padding: "8px 12px",
+          }}>
+            <Search size={16} color={BRAND.textMuted} />
+            <input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Buscar listas, categorias, conteúdos…"
+              style={{
+                flex: 1, background: "transparent", border: "none", outline: "none",
+                color: BRAND.text, fontSize: 14,
+              }}
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                aria-label="Limpar busca"
+                style={{ background: "none", border: "none", cursor: "pointer", color: BRAND.textMuted, padding: 2, display: "flex" }}
+              >
+                <X size={16} />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* ── TABS ── */}
+        <div style={{ maxWidth: 720, margin: "0 auto", padding: "0 16px 12px", display: "flex", gap: 8, overflowX: "auto", scrollbarWidth: "none" }}>
           {[
             { value: "explorar", label: "Explorar", icon: <Sparkles size={14} /> },
             { value: "minhas", label: "Minhas listas", icon: <Folder size={14} />, badge: lists.length > 0 ? lists.length : null },
+            { value: "aprenda", label: "Aprenda", icon: <GraduationCap size={14} /> },
             { value: "produtos", label: "Produtos", icon: <ShoppingBag size={14} /> },
           ].map((t) => (
             <button
               key={t.value}
               onClick={() => setTab(t.value)}
               style={{
-                flex: 1, padding: "9px 0", borderRadius: 10, border: "none", cursor: "pointer",
+                flex: "1 0 auto", padding: "9px 12px", borderRadius: 10, border: "none", cursor: "pointer",
                 fontWeight: 700, fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                transition: "all 0.2s",
+                transition: "all 0.2s", whiteSpace: "nowrap",
                 background: tab === t.value ? BRAND.accent : BRAND.bgLight,
                 color: tab === t.value ? BRAND.bg : BRAND.textMuted,
               }}
@@ -229,6 +259,61 @@ function Index() {
       </header>
 
       <main style={{ maxWidth: 720, margin: "0 auto", padding: "16px 16px 32px" }}>
+
+        {/* ════════════ RESULTADOS DA BUSCA ════════════ */}
+        {searchQuery.trim() && (() => {
+          const q = searchQuery.toLowerCase().trim();
+          const matchedNiches = NICHES.filter((n) =>
+            n.name.toLowerCase().includes(q) ||
+            n.defaultItems.some((i) => i.toLowerCase().includes(q))
+          );
+          const matchedLists = lists.filter((l) =>
+            l.name.toLowerCase().includes(q) ||
+            l.folder.toLowerCase().includes(q) ||
+            l.items.some((i) => i.name.toLowerCase().includes(q))
+          );
+          const empty = matchedNiches.length === 0 && matchedLists.length === 0;
+          return (
+            <div style={{ marginBottom: 16 }}>
+              <h3 style={{ fontSize: 14, fontWeight: 700, color: BRAND.text, margin: "0 0 10px" }}>
+                Resultados para "{searchQuery}"
+              </h3>
+              {empty && (
+                <div style={{ background: BRAND.bgMid, border: `1px solid ${BRAND.bgLight}`, borderRadius: 12, padding: 24, textAlign: "center", color: BRAND.textMuted, fontSize: 14 }}>
+                  Nenhum resultado encontrado 😕
+                </div>
+              )}
+              {matchedNiches.length > 0 && (
+                <>
+                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, color: BRAND.textMuted, margin: "12px 0 6px" }}>Categorias</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: 8 }}>
+                    {matchedNiches.map((n) => (
+                      <button key={n.id} onClick={() => { startNewList(n); setSearchQuery(""); }}
+                        style={{ background: BRAND.bgMid, border: `1px solid ${BRAND.bgLight}`, borderRadius: 12, padding: 12, cursor: "pointer", color: BRAND.text, textAlign: "left" }}>
+                        <div style={{ fontSize: 22 }}>{n.emoji}</div>
+                        <div style={{ fontWeight: 700, fontSize: 13, marginTop: 4 }}>{n.name}</div>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+              {matchedLists.length > 0 && (
+                <>
+                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, color: BRAND.textMuted, margin: "16px 0 6px" }}>Minhas listas</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 8 }}>
+                    {matchedLists.map((l) => (
+                      <button key={l.id} onClick={() => { openExisting(l); setSearchQuery(""); }}
+                        style={{ background: BRAND.bgMid, border: `1px solid ${BRAND.bgLight}`, borderRadius: 12, padding: 12, cursor: "pointer", color: BRAND.text, textAlign: "left" }}>
+                        <div style={{ fontWeight: 700, fontSize: 13 }}>{l.name}</div>
+                        <div style={{ fontSize: 11, color: BRAND.textMuted, marginTop: 2 }}>{l.folder} · {l.items.length} itens</div>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          );
+        })()}
 
         {/* ════════════ EXPLORAR ════════════ */}
         {tab === "explorar" && (
