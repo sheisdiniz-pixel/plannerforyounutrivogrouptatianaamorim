@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { NICHES, type ListNiche } from "@/lib/lists-data";
 import { ROUTINES, RANKS, REWARDS, rankFromXp } from "@/lib/routines-data";
 import { useLists, type SavedList } from "@/hooks/use-lists";
