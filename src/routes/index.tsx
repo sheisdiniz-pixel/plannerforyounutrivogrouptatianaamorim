@@ -716,7 +716,15 @@ function Index() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setFeedbackOpen(false)} style={{ borderColor: BRAND.bgLight, color: BRAND.textMuted }}>Fechar</Button>
             <Button
-              onClick={() => { if (!feedback.trim()) return; toast.success("Obrigado pela sugestão! 💚"); setFeedback(""); setFeedbackOpen(false); }}
+              onClick={() => {
+                if (!feedback.trim()) return;
+                const msg = `💡 Sugestão/Crítica do Planner For You: ${feedback.trim()}`;
+                const url = `https://wa.me/5521995965980?text=${encodeURIComponent(msg)}`;
+                window.open(url, "_blank", "noopener,noreferrer");
+                toast.success("Obrigada pelo seu feedback! 💜");
+                setFeedback("");
+                setFeedbackOpen(false);
+              }}
               style={{ background: accentGradient, color: BRAND.bg, fontWeight: 700, border: "none" }}
             >
               Enviar
